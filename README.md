@@ -1,4 +1,4 @@
- 🛍️ Tienda de Ropa - Proyecto DAM
+# 🛍️ Tienda de Ropa - Proyecto DAM
 
 Este es un proyecto de una tienda de ropa desarrollado con **React Native** para el frontend y **Spring Boot** para el backend.  
 La autenticación de usuarios se maneja con **JWT**, y los roles de usuario incluyen **admin** y **user**.

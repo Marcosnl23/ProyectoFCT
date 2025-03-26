@@ -12,7 +12,7 @@ La autenticación de usuarios se maneja con **JWT**, y los roles de usuario incl
 - Zustand (para manejar el estado global, carrito de compras)
 - React Navigation (para navegación entre pantallas)
 - Axios (para comunicación con la API)
-- Styled Components o Tailwind para estilos
+- Boostrap para estilos
 
 ### **Backend** (📂 `/backend`)
 - **Spring Boot** (Java 17)

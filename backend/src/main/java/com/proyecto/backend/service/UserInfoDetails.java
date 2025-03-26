@@ -1,8 +1,5 @@
 package com.proyecto.backend.service;
 
-
-
-
 import com.proyecto.backend.model.UserInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,16 +9,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class UserInfoDetails implements UserDetails {
 
-    private String username; // Changed from 'name' to 'username' for clarity
+    private String username;
     private String password;
     private List<GrantedAuthority> authorities;
+    private String nombre;
+    private String apellidos;
+    private String email;
 
     public UserInfoDetails(UserInfo userInfo) {
-        this.username = userInfo.getUsername(); // Assuming 'name' is used as 'username'
+        this.username = userInfo.getUsername();
         this.password = userInfo.getPassword();
+        this.nombre = userInfo.getNombre();
+        this.apellidos = userInfo.getApellidos();
+        this.email = userInfo.getEmail();
         this.authorities = List.of(userInfo.getRol().split(","))
                 .stream()
                 .map(SimpleGrantedAuthority::new)
@@ -45,23 +47,33 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Implement your logic if you need this
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Implement your logic if you need this
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Implement your logic if you need this
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Implement your logic if you need this
+        return true;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
 
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }

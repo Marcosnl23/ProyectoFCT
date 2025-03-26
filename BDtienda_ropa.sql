@@ -1,3 +1,5 @@
+drop database tienda_ropa;
+
 create database tienda_ropa;
 
 use tienda_ropa;
@@ -5,9 +7,13 @@ use tienda_ropa;
 CREATE TABLE usuarios (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    rol VARCHAR(50) NOT NULL
 );
+
 
 CREATE TABLE productos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -45,10 +51,6 @@ CREATE TABLE detalle_pedido (
     FOREIGN KEY (producto_id) REFERENCES productos(id)
 );
 
--- Insertar usuarios
-INSERT INTO usuarios (nombre, email, password) VALUES
-('Juan Pérez', 'juan@example.com', 'clave123'),
-('María López', 'maria@example.com', 'password456');
 
 -- Insertar productos (ropa)
 INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url) VALUES
@@ -56,23 +58,13 @@ INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url) VALUES
 ('Pantalón Vaquero', 'Pantalón azul para mujer', 29.99, 30, 'https://example.com/pantalon-vaquero.jpg'),
 ('Sudadera Negra', 'Sudadera con capucha unisex', 39.99, 20, 'https://example.com/sudadera-negra.jpg');
 
--- Insertar productos en el carrito (usuario Juan agrega productos)
-INSERT INTO carrito (usuario_id, producto_id, cantidad) VALUES
-(1, 1, 2),  -- Juan compró 2 camisetas blancas
-(1, 2, 1);  -- Juan compró 1 pantalón vaquero
 
--- Insertar pedido de Juan
-INSERT INTO pedidos (usuario_id, total, fecha) VALUES
-(1, 61.97, NOW());  -- Total = (2 * 15.99) + (1 * 29.99)
-
--- Insertar detalles del pedido
-INSERT INTO detalle_pedido (pedido_id, producto_id, cantidad, precio) VALUES
-(1, 1, 2, 15.99),  -- 2 camisetas blancas
-(1, 2, 1, 29.99);  -- 1 pantalón vaquero
 
 select * from usuarios;
 select * from productos;
 select * from carrito;
 select * from pedidos;
 select * from detalle_pedido;
+
+delete from usuarios where id=2;
 

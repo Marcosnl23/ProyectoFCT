@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Button, Navbar, Container, Nav } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -41,24 +41,35 @@ function Login() {
         }}
       >
         <div
+        style={{
+          width: "400px",
+          backgroundColor: "white",
+          borderRadius: "20px",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+          overflow: "hidden",
+        }}
+      >
+        <div
           style={{
-            width: "400px",
-            backgroundColor: "white",
-            borderRadius: "20px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-            overflow: "hidden",
+            background: "linear-gradient(to right, #8A2BE2, #4B0082)",
+            color: "white",
+            textAlign: "center",
+            padding: "20px",
           }}
         >
-          <div
-            style={{
-              background: "linear-gradient(to right, #8A2BE2, #4B0082)",
-              color: "white",
-              textAlign: "center",
-              padding: "20px",
-            }}
-          >
-            <h2>Iniciar Sesión</h2>
+          <div className="d-flex justify-content-center align-items-center mb-3">
+            <img
+              src={logo}
+              alt="Logo"
+              style={{
+                height: "60px",
+                width: "auto",
+                marginRight: "10px"
+              }}
+            />
           </div>
+          <h2>Iniciar Sesión</h2>
+        </div>
 
           <Form onSubmit={handleSubmit} className="p-4">
             <Form.Group className="mb-3 position-relative">

@@ -54,7 +54,7 @@ CREATE TABLE detalle_pedido (
 
 -- Insertar productos (ropa)
 INSERT INTO productos (nombre, descripcion, precio, stock, imagen_url) VALUES
-('Camiseta Blanca', 'Camiseta de algodón blanca para hombre', 15.99, 50, 'https://www.paperstudio.es/wp-content/uploads/2021/03/camiseta-hombre-algodon-blanca.png'),
+('Camiseta Blanca', 'Camiseta de algodón blanca para hombre', 15.99, 50, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/88ce1202-9fc1-41ce-872d-c9533d04ec8c/KNVB+M+NK+CREST+TEE.png'),
 ('Pantalón Vaquero', 'Pantalón azul para mujer', 29.99, 30, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgXvgF0fLZoouQOAwVDTcsdUs4RA1WXrJstA&s'),
 ('Sudadera Negra', 'Sudadera con capucha unisex', 39.99, 20, 'https://cdn11.bigcommerce.com/s-otp4rjqsbz/images/stencil/670x670/products/212/1701/Foto_06_446_v1b__64371.1734609578.jpg?c=1');
 
@@ -67,4 +67,5 @@ select * from pedidos;
 select * from detalle_pedido;
 
 delete from usuarios where id=2;
+
 

@@ -1,0 +1,120 @@
+.custom-navbar {
+    background-color: #6a0dad;
+    transition: all 0.3s ease;
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-navbar.scrolled {
+    padding: 8px 0;
+    background-color: rgba(106, 13, 173, 0.95);
+    backdrop-filter: blur(10px);
+  }
+  
+  .brand-text {
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: white;
+    letter-spacing: 0.5px;
+  }
+  
+  .nav-link-custom {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    padding: 0.5rem 0.8rem !important;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .nav-link-custom::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: white;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+  }
+  
+  .nav-link-custom:hover {
+    color: white !important;
+  }
+  
+  .nav-link-custom:hover::after {
+    width: 70%;
+  }
+  
+  .icon-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    margin: 0 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .icon-link:hover {
+    color: white !important;
+    transform: scale(1.1);
+  }
+  
+  .user-dropdown {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 5px 0;
+  }
+  
+  .user-dropdown:hover {
+    color: white;
+  }
+  
+  .user-dropdown-container .dropdown-menu {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  
+  .dropdown-item {
+    padding: 10px 20px;
+    transition: all 0.2s ease;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .logout-item:hover {
+    background-color: #fff3f3;
+    color: #dc3545;
+  }
+  
+  .navbar-toggler {
+    border: none;
+    padding: 0;
+  }
+  
+  .navbar-toggler:focus {
+    box-shadow: none;
+  }
+  
+  /* Media queries para responsive */
+  @media (max-width: 991.98px) {
+    .custom-navbar .navbar-collapse {
+      background-color: #6a0dad;
+      margin-top: 10px;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    
+    .nav-link-custom {
+      padding: 12px !important;
+    }
+    
+    .icon-link {
+      padding: 12px !important;
+    }
+  }

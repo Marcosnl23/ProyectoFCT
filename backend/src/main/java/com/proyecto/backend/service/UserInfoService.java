@@ -56,4 +56,19 @@ public class UserInfoService implements UserDetailsService {
         }
         return null; // Si el usuario no existe o las credenciales son incorrectas, devolver null
     }
+
+    public String generateRandomPassword() {
+        // Implementación para generar una contraseña aleatoria
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        StringBuilder password = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            int index = (int) (Math.random() * characters.length());
+            password.append(characters.charAt(index));
+        }
+        return password.toString();
+    }
+
+    public String encodePassword(String password) {
+        return encoder.encode(password);
+    }
 }

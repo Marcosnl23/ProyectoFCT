@@ -21,7 +21,7 @@ public class GoogleAuthService {
                         GsonFactory.getDefaultInstance()
                 ).build()
         )
-                .setAudience(Collections.singletonList("63326354970-g9ouapsf2i43o8rr10dhlpaus9p46v71.apps.googleusercontent.com")) // <-- Cámbialo
+                .setAudience(Collections.singletonList("63326354970-3icm4p18ap9ji55pqgm9knfseaaso9du.apps.googleusercontent.com")) // <-- Cámbialo
                 .build();
     }
 
@@ -37,4 +37,6 @@ public class GoogleAuthService {
             return null;
         }
     }
+
+
 }

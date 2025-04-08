@@ -174,6 +174,7 @@ function Login() {
               <GoogleLogin
                 onSuccess={async (credentialResponse) => {
                   const { credential } = credentialResponse;
+                  console.log(credentialResponse);
 
                   try {
                     const res = await axios.post(

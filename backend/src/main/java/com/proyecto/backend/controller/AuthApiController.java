@@ -66,18 +66,21 @@ public class AuthApiController {
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> request) {
         String idToken = request.get("token");
+
+        // 1. Verifica el token con Google
         GoogleIdToken.Payload payload = googleAuthService.verifyToken(idToken);
 
         if (payload == null) {
             return ResponseEntity.status(401).body("Token de Google inválido");
         }
 
+        // 2. Extrae los datos del payload de Google
         String email = payload.getEmail();
         String nombre = (String) payload.get("given_name");
         String apellidos = (String) payload.get("family_name");
         String username = email.split("@")[0];
 
-        // Busca o crea el usuario
+        // 3. Busca el usuario en la base de datos, o lo crea si no existe
         UserInfo user = userInfoRepository.findByEmail(email).orElseGet(() -> {
             UserInfo nuevo = new UserInfo();
             nuevo.setEmail(email);
@@ -85,12 +88,21 @@ public class AuthApiController {
             nuevo.setApellidos(apellidos);
             nuevo.setUsername(username);
             nuevo.setRol("user");
-            return userInfoRepository.save(nuevo);
+            //Genera una contraseña aleatoria para el usuario encriptada
+            String password = userInfoService.generateRandomPassword();
+            nuevo.setPassword(userInfoService.encodePassword(password));
+
+            return userInfoRepository.save(nuevo); // Aquí se guarda el nuevo usuario
         });
 
-        String jwt = jwtService.generateToken((UserDetails) user);
+        UserDetails userDetails = new UserInfoDetails(user); // Aquí se crea un UserDetails a partir del usuario
+        // 4. Asegúrate que `UserInfo` implemente `UserDetails` (como ya vimos antes)
+        String jwt = jwtService.generateToken(userDetails); // Aquí user ya es un UserDetails válido
+
+        // 5. Retorna el token JWT generado
         return ResponseEntity.ok(Map.of("token", jwt));
     }
+
 
     private void autenticar(String username, String password) throws Exception {
         try {

@@ -1,120 +1,105 @@
+/* Navbar.css */
 .custom-navbar {
-    background-color: #6a0dad;
-    transition: all 0.3s ease;
-    padding: 15px 0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+  padding: 15px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.custom-navbar.scrolled {
+  padding: 8px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.98);
+}
+
+.brand-text {
+  font-weight: 700;
+  font-size: 1.3rem;
+  background: linear-gradient(90deg, #8A2BE2, #4B0082);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.nav-link-custom {
+  font-weight: 500;
+  color: #333 !important;
+  transition: color 0.3s ease;
+  position: relative;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.nav-link-custom:hover {
+  color: #8A2BE2 !important;
+}
+
+/* Estilo para la pestaña activa */
+.nav-link-custom.active {
+  color: #8A2BE2 !important;
+  font-weight: 600;
+}
+
+.nav-link-custom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: #8A2BE2;
+  transition: width 0.3s ease;
+}
+
+.nav-link-custom:hover::after,
+.nav-link-custom.active::after {
+  width: 80%;
+}
+
+.icon-link {
+  color: #333;
+  padding: 0.5rem 0.75rem !important;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.icon-link:hover,
+.icon-link.active {
+  color: #8A2BE2;
+  transform: translateY(-2px);
+}
+
+.user-dropdown {
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.user-dropdown-container .dropdown-toggle::after {
+  display: none;
+}
+
+/* Estilo para elementos de dropdown activos */
+.dropdown-item.active {
+  background-color: rgba(138, 43, 226, 0.1);
+  color: #8A2BE2;
+}
+
+.logout-item {
+  color: #dc3545 !important;
+}
+
+.logout-item:hover {
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    padding: 1rem 0;
   }
   
-  .custom-navbar.scrolled {
-    padding: 8px 0;
-    background-color: rgba(106, 13, 173, 0.95);
-    backdrop-filter: blur(10px);
+  .nav-link-custom.active::after {
+    width: 40%;
   }
-  
-  .brand-text {
-    font-weight: 600;
-    font-size: 1.3rem;
-    color: white;
-    letter-spacing: 0.5px;
-  }
-  
-  .nav-link-custom {
-    color: rgba(255, 255, 255, 0.85) !important;
-    font-weight: 500;
-    font-size: 0.95rem;
-    letter-spacing: 0.3px;
-    padding: 0.5rem 0.8rem !important;
-    transition: all 0.2s ease;
-    position: relative;
-  }
-  
-  .nav-link-custom::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 50%;
-    background-color: white;
-    transform: translateX(-50%);
-    transition: width 0.3s ease;
-  }
-  
-  .nav-link-custom:hover {
-    color: white !important;
-  }
-  
-  .nav-link-custom:hover::after {
-    width: 70%;
-  }
-  
-  .icon-link {
-    color: rgba(255, 255, 255, 0.85) !important;
-    margin: 0 8px;
-    transition: all 0.2s ease;
-  }
-  
-  .icon-link:hover {
-    color: white !important;
-    transform: scale(1.1);
-  }
-  
-  .user-dropdown {
-    color: rgba(255, 255, 255, 0.85);
-    font-weight: 500;
-    transition: all 0.2s ease;
-    padding: 5px 0;
-  }
-  
-  .user-dropdown:hover {
-    color: white;
-  }
-  
-  .user-dropdown-container .dropdown-menu {
-    border-radius: 8px;
-    border: none;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-    margin-top: 10px;
-  }
-  
-  .dropdown-item {
-    padding: 10px 20px;
-    transition: all 0.2s ease;
-  }
-  
-  .dropdown-item:hover {
-    background-color: #f8f9fa;
-  }
-  
-  .logout-item:hover {
-    background-color: #fff3f3;
-    color: #dc3545;
-  }
-  
-  .navbar-toggler {
-    border: none;
-    padding: 0;
-  }
-  
-  .navbar-toggler:focus {
-    box-shadow: none;
-  }
-  
-  /* Media queries para responsive */
-  @media (max-width: 991.98px) {
-    .custom-navbar .navbar-collapse {
-      background-color: #6a0dad;
-      margin-top: 10px;
-      border-radius: 8px;
-      padding: 10px;
-    }
-    
-    .nav-link-custom {
-      padding: 12px !important;
-    }
-    
-    .icon-link {
-      padding: 12px !important;
-    }
-  }
+}

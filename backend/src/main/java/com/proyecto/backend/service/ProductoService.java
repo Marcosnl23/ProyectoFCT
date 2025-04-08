@@ -1,30 +1,54 @@
 package com.proyecto.backend.service;
 
-
 import com.proyecto.backend.model.Producto;
 import com.proyecto.backend.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductoService {
+
     @Autowired
     private ProductoRepository productoRepository;
 
-    // Obtener todos los productos
-    public List<Producto> obtenerProductos() {
+    public List<Producto> listarProductos() {
         return productoRepository.findAll();
     }
 
-    // Obtener un producto por su ID
-    public Producto obtenerProductoPorId(Long id) {
-        return productoRepository.findById(id).orElse(null);
+    public Optional<Producto> buscarPorId(Long id) {
+        return productoRepository.findById(id);
     }
 
-    // Guardar un producto
+    public List<Producto> buscarPorCategoria(Long categoriaId) {
+        return productoRepository.findByCategoriaId(categoriaId);
+    }
+
     public Producto guardarProducto(Producto producto) {
         return productoRepository.save(producto);
     }
-}
 
+    public void eliminarProducto(Long id) {
+        productoRepository.deleteById(id);
+    }
+
+    public Optional<Producto> actualizarProducto(Long id, Producto producto) {
+        return productoRepository.findById(id)
+                .map(existingProduct -> {
+                    existingProduct.setNombre(producto.getNombre());
+                    existingProduct.setDescripcion(producto.getDescripcion());
+                    existingProduct.setPrecio(producto.getPrecio());
+                    existingProduct.setCategoria(producto.getCategoria());
+                    return productoRepository.save(existingProduct);
+                });
+    }
+
+    public Optional<Producto> obtenerProductoPorId(Long id) {
+        return productoRepository.findById(id);
+    }
+
+    public List<Producto> obtenerProductosDestacados() {
+        return productoRepository.findProductosDestacados();
+    }
+}

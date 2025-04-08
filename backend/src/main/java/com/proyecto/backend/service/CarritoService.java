@@ -8,22 +8,23 @@ import java.util.List;
 
 @Service
 public class CarritoService {
+
     @Autowired
     private CarritoRepository carritoRepository;
 
-    // Obtener el carrito de un usuario
-    public List<Carrito> obtenerCarritoDeUsuario(Long usuarioId) {
+    public List<Carrito> listarCarritoPorUsuario(Long usuarioId) {
         return carritoRepository.findByUsuarioId(usuarioId);
     }
 
-    // Agregar un producto al carrito
     public Carrito agregarAlCarrito(Carrito carrito) {
         return carritoRepository.save(carrito);
     }
 
-    // Eliminar un producto del carrito
     public void eliminarDelCarrito(Long id) {
         carritoRepository.deleteById(id);
     }
-}
 
+    public List<Carrito> obtenerCarritoDeUsuario(Long usuarioId) {
+        return carritoRepository.findByUsuarioId(usuarioId);
+    }
+}

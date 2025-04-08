@@ -8,17 +8,23 @@ import java.util.List;
 
 @Service
 public class PedidoService {
+
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    // Crear un pedido
+    public List<Pedido> listarPedidosPorUsuario(Long usuarioId) {
+        return pedidoRepository.findByUsuarioId(usuarioId);
+    }
+
+    public Pedido guardarPedido(Pedido pedido) {
+        return pedidoRepository.save(pedido);
+    }
+
     public Pedido crearPedido(Pedido pedido) {
         return pedidoRepository.save(pedido);
     }
 
-    // Obtener todos los pedidos de un usuario
     public List<Pedido> obtenerPedidosDeUsuario(Long usuarioId) {
         return pedidoRepository.findByUsuarioId(usuarioId);
     }
 }
-

@@ -15,21 +15,21 @@ public class Producto {
     private String nombre;
     private String descripcion;
     private Double precio;
-    private Integer stock;
-    private String imagenUrl;
 
-    public Producto(Long id, String nombre, String descripcion, Double precio, Integer stock, String imagenUrl) {
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
+    public Producto(Long id, String nombre, String descripcion, Double precio, Categoria categoria) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
-        this.stock = stock;
-        this.imagenUrl = imagenUrl;
-    };
+        this.categoria = categoria;
+    }
 
-    public Producto(){
-
-    };
+    public Producto() {
+    }
 
     public Long getId() {
         return id;
@@ -63,20 +63,12 @@ public class Producto {
         this.precio = precio;
     }
 
-    public Integer getStock() {
-        return stock;
+    public Categoria getCategoria() {
+        return categoria;
     }
 
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
-    public String getImagenUrl() {
-        return imagenUrl;
-    }
-
-    public void setImagenUrl(String imagenUrl) {
-        this.imagenUrl = imagenUrl;
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 }
 

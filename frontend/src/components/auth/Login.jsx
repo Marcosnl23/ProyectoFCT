@@ -3,6 +3,7 @@ import { Form, Button, Navbar, Container, Nav } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import logo from "../../assets/logo.png";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -31,7 +32,6 @@ function Login() {
 
   return (
     <>
-
       {/* Login Form */}
       <div
         className="d-flex justify-content-center align-items-center vh-100"
@@ -41,35 +41,35 @@ function Login() {
         }}
       >
         <div
-        style={{
-          width: "400px",
-          backgroundColor: "white",
-          borderRadius: "20px",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-          overflow: "hidden",
-        }}
-      >
-        <div
           style={{
-            background: "linear-gradient(to right, #8A2BE2, #4B0082)",
-            color: "white",
-            textAlign: "center",
-            padding: "20px",
+            width: "400px",
+            backgroundColor: "white",
+            borderRadius: "20px",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            overflow: "hidden",
           }}
         >
-          <div className="d-flex justify-content-center align-items-center mb-3">
-            <img
-              src={logo}
-              alt="Logo"
-              style={{
-                height: "60px",
-                width: "auto",
-                marginRight: "10px"
-              }}
-            />
+          <div
+            style={{
+              background: "linear-gradient(to right, #8A2BE2, #4B0082)",
+              color: "white",
+              textAlign: "center",
+              padding: "20px",
+            }}
+          >
+            <div className="d-flex justify-content-center align-items-center mb-3">
+              <img
+                src={logo}
+                alt="Logo"
+                style={{
+                  height: "60px",
+                  width: "auto",
+                  marginRight: "10px",
+                }}
+              />
+            </div>
+            <h2>Iniciar Sesión</h2>
           </div>
-          <h2>Iniciar Sesión</h2>
-        </div>
 
           <Form onSubmit={handleSubmit} className="p-4">
             <Form.Group className="mb-3 position-relative">
@@ -169,6 +169,32 @@ function Login() {
             >
               Iniciar Sesión
             </Button>
+
+            <div className="text-center mt-3">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  const { credential } = credentialResponse;
+
+                  try {
+                    const res = await axios.post(
+                      "http://localhost:8080/auth/api/google-login",
+                      {
+                        token: credential,
+                      }
+                    );
+
+                    localStorage.setItem("token", res.data.token);
+                    window.location.href = "/welcome";
+                  } catch (err) {
+                    setError("Error al iniciar sesión con Google");
+                    console.error(err);
+                  }
+                }}
+                onError={() => {
+                  setError("Fallo la autenticación con Google");
+                }}
+              />
+            </div>
 
             <div className="text-center mt-3">
               <Button

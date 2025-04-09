@@ -51,4 +51,8 @@ public class ProductoService {
     public List<Producto> obtenerProductosDestacados() {
         return productoRepository.findProductosDestacados();
     }
+
+    public List<Producto> obtenerProductosPorCategoria(Long id) {
+        return productoRepository.findByCategoriaId(id);
+    }
 }

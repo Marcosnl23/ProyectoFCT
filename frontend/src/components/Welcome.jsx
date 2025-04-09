@@ -21,13 +21,10 @@ function Welcome() {
   const [apellidos, setApellidos] = useState("");
   const [email, setEmail] = useState("");
   const [categorias, setCategorias] = useState([]);
-  const [productosDestacados, setProductosDestacados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("todos");
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [countdownTime, setCountdownTime] = useState(259200); // 3 días en segundos
   const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const images = [
     {
@@ -125,24 +122,38 @@ function Welcome() {
 
 
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      // Obtener el token del localStorage
+      const token = localStorage.getItem("token");
+      
+      // Llamar al endpoint de logout
+      await axios.post(
+        "http://localhost:8080/auth/api/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      // Eliminar el token del localStorage
+      localStorage.removeItem("token");
+      
+      // Redirigir a la página de inicio
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      // Aún así, limpiamos el localStorage y redirigimos
+      localStorage.removeItem("token");
+      window.location.href = "/";
+    }
   };
 
   const handleCategoriaClick = (categoriaId) => {
-    navigate(`/categoria/${categoriaId}`);
-  };
-
-  const handleProductoClick = (productoId) => {
-    navigate(`/producto/${productoId}`);
-  };
-
-  const handleNewsletterSubmit = (e) => {
-    e.preventDefault();
-    // Aquí implementarías la lógica para suscribir al newsletter
-    alert(`¡Gracias por suscribirte con ${newsletterEmail}!`);
-    setNewsletterEmail("");
+    setSelectedCategory(categoriaId);
+    navigate(`/categoria/${categoriaId}`); 
   };
 
   // Filtrar categorías por género
@@ -220,7 +231,6 @@ function Welcome() {
         onLogout={handleLogout}
       />
 
-      {/* Carrusel mejorado con texto */}
       <ImageCarousel
         images={images}
         autoPlay={true}
@@ -335,35 +345,6 @@ function Welcome() {
                 <li className="mb-2"><i className="bi bi-check2-circle text-primary me-2"></i> Utiliza accesorios para elevar looks básicos</li>
                 <li className="mb-2"><i className="bi bi-check2-circle text-primary me-2"></i> Mezcla estilos formal e informal para un look contemporáneo</li>
               </ul>
-            </Col>
-          </Row>
-        </div>
-
-        {/* Newsletter */}
-        <div className="my-5 p-4 bg-primary text-white rounded newsletter-section">
-          <Row className="align-items-center">
-            <Col lg={6} className="mb-4 mb-lg-0">
-              <h2 className="newsletter-title">¡Únete a Nuestra Newsletter!</h2>
-              <p className="newsletter-text">Recibe las últimas novedades, tendencias y ofertas exclusivas directamente en tu email.</p>
-            </Col>
-            <Col lg={6}>
-              <Form onSubmit={handleNewsletterSubmit}>
-                <InputGroup>
-                  <Form.Control
-                    type="email"
-                    placeholder="Tu dirección de email"
-                    value={newsletterEmail}
-                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                    required
-                  />
-                  <Button type="submit" variant="light" className="text-primary fw-bold">
-                    Suscribirme
-                  </Button>
-                </InputGroup>
-                <Form.Text className="text-white-50">
-                  Nunca compartiremos tu correo con terceros.
-                </Form.Text>
-              </Form>
             </Col>
           </Row>
         </div>

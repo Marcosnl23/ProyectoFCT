@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -103,7 +104,6 @@ public class AuthApiController {
         return ResponseEntity.ok(Map.of("token", jwt));
     }
 
-
     private void autenticar(String username, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -112,5 +112,16 @@ public class AuthApiController {
         } catch (BadCredentialsException e) {
             throw new RuntimeException("Credenciales inválidas: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+        // Extraer el token del header)
+        String actualToken = token.replace("Bearer ", "");
+        
+        // Invalidar el token en el servidor
+        jwtService.invalidateToken(actualToken);
+        
+        return ResponseEntity.ok("Sesión cerrada correctamente");
     }
 }

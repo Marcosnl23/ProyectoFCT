@@ -9,6 +9,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,9 +27,13 @@ function Login() {
       localStorage.setItem("token", response.data);
       window.location.href = "/welcome";
     } catch (err) {
-      setError(err.response?.data || "Error al iniciar sesión");
+      setError("Error al iniciar sesión usuario o contraseña incorrectos");
     }
   };
+
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  }
 
   return (
     <>
@@ -36,7 +41,7 @@ function Login() {
       <div
         className="d-flex justify-content-center align-items-center vh-100"
         style={{
-          background: "linear-gradient(135deg, #8A2BE2, #4B0082)",
+          background: "linear-gradient(135deg, #6c8eb0, #3a5a7d)",
           fontFamily: "Arial, sans-serif",
         }}
       >
@@ -44,14 +49,14 @@ function Login() {
           style={{
             width: "400px",
             backgroundColor: "white",
-            borderRadius: "20px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            borderRadius: "15px",
+            boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
             overflow: "hidden",
           }}
         >
           <div
             style={{
-              background: "linear-gradient(to right, #8A2BE2, #4B0082)",
+              background: "linear-gradient(to right, #5b7d9c, #3a5a7d)",
               color: "white",
               textAlign: "center",
               padding: "20px",
@@ -88,7 +93,7 @@ function Login() {
                     position: "absolute",
                     left: "10px",
                     top: "12px",
-                    color: "#8A2BE2",
+                    color: "#5b7d9c",
                   }}
                 >
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -102,8 +107,8 @@ function Login() {
                   required
                   style={{
                     paddingLeft: "40px",
-                    borderRadius: "20px",
-                    border: "1px solid #8A2BE2",
+                    borderRadius: "10px",
+                    border: "1px solid #5b7d9c",
                   }}
                 />
               </div>
@@ -125,7 +130,7 @@ function Login() {
                     position: "absolute",
                     left: "10px",
                     top: "12px",
-                    color: "#8A2BE2",
+                    color: "#5b7d9c",
                   }}
                 >
                   <rect
@@ -139,17 +144,62 @@ function Login() {
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
                 <Form.Control
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   style={{
                     paddingLeft: "40px",
-                    borderRadius: "20px",
-                    border: "1px solid #8A2BE2",
+                    paddingRight: "40px",
+                    borderRadius: "10px",
+                    border: "1px solid #5b7d9c",
                   }}
                 />
+                {/* Icono para mostrar/ocultar contraseña */}
+                <div
+                  onClick={handleShowPassword}
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "12px",
+                    color: "#5b7d9c",
+                    cursor: "pointer"
+                  }}
+                >
+                  {showPassword ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  )}
+                </div>
               </div>
             </Form.Group>
 
@@ -161,9 +211,9 @@ function Login() {
               type="submit"
               className="w-100"
               style={{
-                background: "linear-gradient(to right, #8A2BE2, #4B0082)",
+                background: "linear-gradient(to right, #5b7d9c, #3a5a7d)",
                 border: "none",
-                borderRadius: "20px",
+                borderRadius: "10px",
                 padding: "10px",
               }}
             >
@@ -202,7 +252,7 @@ function Login() {
                 variant="link"
                 href="/register"
                 style={{
-                  color: "#8A2BE2",
+                  color: "#3a5a7d",
                   textDecoration: "none",
                   fontWeight: "bold",
                 }}

@@ -4,8 +4,9 @@ import { Heart, Bag, Search } from "react-bootstrap-icons";
 import { useLocation } from "react-router-dom";
 import "../css/Navbar.css";
 import { Person } from 'react-bootstrap-icons';
+import logo from "../assets/logo.png";
 
-function NavBar({ logo, username, nombre, apellidos, email, rol, onLogout }) {
+function NavBar({username, nombre, apellidos, email, rol, onLogout }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const [activePath, setActivePath] = useState("/");

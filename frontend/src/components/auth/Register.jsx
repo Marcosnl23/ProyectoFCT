@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
 
 function Register() {
@@ -45,7 +46,7 @@ function Register() {
     <div
       className="d-flex justify-content-center align-items-center min-vh-100"
       style={{
-        background: "linear-gradient(135deg, #8A2BE2, #4B0082)",
+        background: "linear-gradient(135deg, #6c8eb0, #3a5a7d)",
         padding: "20px 0",
       }}
     >
@@ -56,7 +57,7 @@ function Register() {
         <div
           className="text-center text-white p-4"
           style={{
-            background: "linear-gradient(to right, #8A2BE2, #4B0082)",
+            background: "linear-gradient(to right, #5b7d9c, #3a5a7d)",
           }}
         >
           <h2 className="mb-0">Crear Cuenta</h2>
@@ -80,7 +81,7 @@ function Register() {
                 <div className="position-relative">
                   <i
                     className="bi bi-person position-absolute"
-                    style={{ left: "15px", top: "12px", color: "#8A2BE2" }}
+                    style={{ left: "15px", top: "12px", color: "#5b7d9c" }}
                   ></i>
                   <Form.Control
                     type="text"
@@ -91,7 +92,7 @@ function Register() {
                     className="ps-5"
                     style={{
                       borderRadius: "20px",
-                      border: "1px solid #8A2BE2",
+                      border: "1px solid #5b7d9c",
                       height: "45px",
                     }}
                   />
@@ -103,7 +104,7 @@ function Register() {
                 <div className="position-relative">
                   <i
                     className="bi bi-person-plus position-absolute"
-                    style={{ left: "15px", top: "12px", color: "#8A2BE2" }}
+                    style={{ left: "15px", top: "12px", color: "#5b7d9c" }}
                   ></i>
                   <Form.Control
                     type="text"
@@ -114,7 +115,7 @@ function Register() {
                     className="ps-5"
                     style={{
                       borderRadius: "20px",
-                      border: "1px solid #8A2BE2",
+                      border: "1px solid #5b7d9c",
                       height: "45px",
                     }}
                   />
@@ -127,7 +128,7 @@ function Register() {
             <div className="position-relative">
               <i
                 className="bi bi-envelope position-absolute"
-                style={{ left: "15px", top: "12px", color: "#8A2BE2" }}
+                style={{ left: "15px", top: "12px", color: "#5b7d9c" }}
               ></i>
               <Form.Control
                 type="email"
@@ -138,7 +139,7 @@ function Register() {
                 className="ps-5"
                 style={{
                   borderRadius: "20px",
-                  border: "1px solid #8A2BE2",
+                  border: "1px solid #5b7d9c",
                   height: "45px",
                 }}
               />
@@ -149,7 +150,7 @@ function Register() {
             <div className="position-relative">
               <i
                 className="bi bi-person-circle position-absolute"
-                style={{ left: "15px", top: "12px", color: "#8A2BE2" }}
+                style={{ left: "15px", top: "12px", color: "#5b7d9c" }}
               ></i>
               <Form.Control
                 type="text"
@@ -160,7 +161,7 @@ function Register() {
                 className="ps-5"
                 style={{
                   borderRadius: "20px",
-                  border: "1px solid #8A2BE2",
+                  border: "1px solid #5b7d9c",
                   height: "45px",
                 }}
               />
@@ -171,7 +172,7 @@ function Register() {
             <div className="position-relative">
               <i
                 className="bi bi-lock position-absolute"
-                style={{ left: "15px", top: "12px", color: "#8A2BE2" }}
+                style={{ left: "15px", top: "12px", color: "#5b7d9c" }}
               ></i>
               <Form.Control
                 type="password"
@@ -182,7 +183,7 @@ function Register() {
                 className="ps-5"
                 style={{
                   borderRadius: "20px",
-                  border: "1px solid #8A2BE2",
+                  border: "1px solid #5b7d9c",
                   height: "45px",
                 }}
               />
@@ -193,7 +194,7 @@ function Register() {
             type="submit"
             className="w-100 mb-3 py-2"
             style={{
-              background: "linear-gradient(to right, #8A2BE2, #4B0082)",
+              background: "linear-gradient(to right, #5b7d9c, #3a5a7d)",
               border: "none",
               borderRadius: "20px",
               fontSize: "16px",
@@ -208,7 +209,11 @@ function Register() {
             <a
               href="/"
               className="text-decoration-none fw-bold"
-              style={{ color: "#8A2BE2" }}
+              style={{
+                color: "#3a5a7d",
+                textDecoration: "none",
+                fontWeight: "bold",
+              }}
             >
               ¿Ya tienes cuenta? Inicia sesión aquí
             </a>

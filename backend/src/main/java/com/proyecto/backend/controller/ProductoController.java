@@ -50,4 +50,10 @@ public class ProductoController {
         productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }
+
+    
+    @GetMapping("/categoria/{id}")
+    public List<Producto> obtenerProductosPorCategoria(@PathVariable Long id) {
+        return productoService.obtenerProductosPorCategoria(id);
+    }
 }

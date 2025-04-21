@@ -220,6 +220,10 @@ function Login() {
               Iniciar Sesión
             </Button>
 
+            <div className="text-center mt-3" style={{ fontSize: "14px" }}>
+              <span style={{ color: "#5b7d9c" }}>O inicia sesión con</span>
+            </div>
+
             <div className="text-center mt-3">
               <GoogleLogin
                 onSuccess={async (credentialResponse) => {

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
-import { Heart, Bag, Search } from "react-bootstrap-icons";
-import { useLocation } from "react-router-dom";
+import { Navbar, Container, Nav, NavDropdown, Form, Button, InputGroup } from "react-bootstrap";
+import { Heart, Bag, Search, Person } from "react-bootstrap-icons";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../css/Navbar.css";
-import { Person } from 'react-bootstrap-icons';
 import logo from "../assets/logo.png";
 
 function NavBar({username, nombre, apellidos, email, rol, onLogout }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const [activePath, setActivePath] = useState("/");
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   // Detectar scroll para cambiar estilo del navbar
   useEffect(() => {
@@ -33,6 +34,15 @@ function NavBar({username, nombre, apellidos, email, rol, onLogout }) {
   // Función para determinar si un enlace está activo
   const isActive = (path) => {
     return activePath === path ? "active" : "";
+  };
+
+  // Manejar la búsqueda
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navegar a la página de resultados de búsqueda con el parámetro de consulta
+      navigate(`/buscar?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   return (
@@ -62,29 +72,41 @@ function NavBar({username, nombre, apellidos, email, rol, onLogout }) {
             >
               Home
             </Nav.Link>
+           
+            
             <Nav.Link
-              href="/hombre"
-              className={`nav-link-custom mx-2 ${isActive("/hombre")}`}
+              href="/Contacto"
+              className={`nav-link-custom mx-2 ${isActive("/Contacto")}`}
             >
-              Hombre
+              Contacto
             </Nav.Link>
-            <Nav.Link
-              href="/mujer"
-              className={`nav-link-custom mx-2 ${isActive("/mujer")}`}
-            >
-              Mujer
-            </Nav.Link>
+
+             
+            {/* Buscador con clases de Bootstrap */}
+            <Form onSubmit={handleSearch} className="d-flex mx-2">
+              <InputGroup className="rounded-pill border overflow-hidden bg-light">
+                <Form.Control
+                  type="search"
+                  placeholder="Buscar productos..."
+                  aria-label="Buscar"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border-0 bg-transparent shadow-none"
+                />
+                <Button 
+                  variant="transparent" 
+                  type="submit"
+                  className="d-flex align-items-center justify-content-center"
+                >
+                  <Search size={16} />
+                </Button>
+              </InputGroup>
+            </Form>
           </Nav>
 
           <Nav className="ms-auto d-flex align-items-center">
             <Nav.Link href="/cart" className={`icon-link ${isActive("/cart")}`}>
               <Bag size={20} />
-            </Nav.Link>
-            <Nav.Link
-              href="/search"
-              className={`icon-link ${isActive("/search")}`}
-            >
-              <Search size={20} />
             </Nav.Link>
 
             <NavDropdown

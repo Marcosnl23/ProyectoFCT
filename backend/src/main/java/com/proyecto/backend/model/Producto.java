@@ -16,15 +16,17 @@ public class Producto {
     private String descripcion;
     private Double precio;
 
+    private  String imagen;
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    public Producto(Long id, String nombre, String descripcion, Double precio, Categoria categoria) {
+    public Producto(Long id, String nombre, String descripcion, Double precio,String imagen, Categoria categoria) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
+        this.imagen = imagen;
         this.categoria = categoria;
     }
 
@@ -69,6 +71,14 @@ public class Producto {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }
 

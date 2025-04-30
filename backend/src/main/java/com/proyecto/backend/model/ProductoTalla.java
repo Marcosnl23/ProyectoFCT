@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "productos_tallas")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
 public class ProductoTalla {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

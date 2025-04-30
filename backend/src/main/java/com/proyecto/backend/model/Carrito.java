@@ -7,7 +7,6 @@ import lombok.*;
 @Entity
 @Table(name = "carrito")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
 public class Carrito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

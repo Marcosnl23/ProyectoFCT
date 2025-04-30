@@ -8,7 +8,6 @@ import java.util.List;
 @Entity
 @Table(name = "pedidos")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,6 +12,38 @@ function CategoriaProductos() {
   const [error, setError] = useState(null);
   const [nombreCategoria, setNombreCategoria] = useState(""); // Para almacenar el nombre de la categoría
   const navigate = useNavigate(); // Para redirigir al usuario si es necesario
+  const [tallasPorProducto, setTallasPorProducto] = useState({});
+  const [tallasSeleccionadas, setTallasSeleccionadas] = useState({}); // Estado para las tallas seleccionadas por producto
+
+  // Obtener las tallas del producto
+  const obtenerTallas = async (productoId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No se encontró el token. Por favor, inicie sesión.");
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:8080/api/tallas/producto/${productoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setTallasPorProducto((prevState) => ({
+        ...prevState,
+        [productoId]: response.data,
+      }));
+    } catch (err) {
+      console.error(
+        `Error al obtener las tallas para el producto ${productoId}:`,
+        err
+      );
+    }
+  };
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -33,8 +65,7 @@ function CategoriaProductos() {
           }
         );
 
-        // También podríamos obtener el nombre de la categoría si la API lo proporciona
-        // Si no, puedes agregar otra llamada para obtener los detalles de la categoría
+        // Obtener el nombre de la categoría
         try {
           const categoriaResponse = await axios.get(
             `http://localhost:8080/api/categorias/${categoriaId}`,
@@ -49,17 +80,23 @@ function CategoriaProductos() {
           }
         } catch (catErr) {
           console.error("Error al obtener el nombre de la categoría:", catErr);
-          // No establecemos error aquí para no interrumpir la carga de productos
         }
 
         setProductos(response.data);
+
+        // Obtener las tallas para cada producto
+        response.data.forEach((producto) => {
+          obtenerTallas(producto.id);
+        });
+
         setLoading(false);
       } catch (err) {
-        // Si el error es de autenticación o no se encuentra la categoría
         if (err.response && err.response.status === 401) {
-          setError("Token inválido o expirado. Redirigiendo al inicio de sesión...");
-          localStorage.removeItem("token"); // Eliminar el token expirado
-          setTimeout(() => navigate("/"), 3000); // Redirigir a la página de inicio después de 3 segundos
+          setError(
+            "Token inválido o expirado. Redirigiendo al inicio de sesión..."
+          );
+          localStorage.removeItem("token");
+          setTimeout(() => navigate("/"), 3000);
         } else {
           setError("Error al cargar los productos. Intente más tarde.");
         }
@@ -68,7 +105,7 @@ function CategoriaProductos() {
     };
 
     fetchProductos();
-  }, [categoriaId, navigate]); // Dependencia de navigate para que funcione correctamente en caso de redirección
+  }, [categoriaId, navigate]);
 
   if (loading) {
     return (
@@ -91,9 +128,7 @@ function CategoriaProductos() {
       <div className="d-flex flex-column min-vh-100">
         <Navbar />
         <Container className="mt-5 pt-5">
-          <Alert variant="danger">
-            {error}
-          </Alert>
+          <Alert variant="danger">{error}</Alert>
         </Container>
         <div className="mt-auto">
           <Footer />
@@ -102,16 +137,25 @@ function CategoriaProductos() {
     );
   }
 
+    const handleTallaSeleccionada = (productoId, talla) => {
+    setTallasSeleccionadas((prevState) => ({
+      ...prevState,
+      [productoId]: prevState[productoId] === talla ? null : talla, // Deseleccionar si ya está seleccionada
+    }));
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar />
-      
-      {/* Añadido className mt-5 pt-5 para dar más espacio en la parte superior */}
       <Container className="mt-5 pt-5 flex-grow-1">
-        <h2 className="mb-4">{nombreCategoria || "Productos de la Categoría"}</h2>
-        
+        <h2 className="mb-4">
+          {nombreCategoria || "Productos de la Categoría"}
+        </h2>
+
         {productos.length === 0 ? (
-          <Alert variant="info">No hay productos disponibles en esta categoría.</Alert>
+          <Alert variant="info">
+            No hay productos disponibles en esta categoría.
+          </Alert>
         ) : (
           <Row xs={1} md={2} lg={3} className="g-4">
             {productos.map((producto) => (
@@ -122,7 +166,11 @@ function CategoriaProductos() {
                       variant="top"
                       src={producto.imagen || "default-image.jpg"}
                       alt={producto.nombre}
-                      style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                      style={{
+                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                      }}
                     />
                   </div>
                   <Card.Body>
@@ -130,12 +178,43 @@ function CategoriaProductos() {
                     <Card.Text>{producto.descripcion}</Card.Text>
                     {producto.precio && (
                       <div className="d-flex justify-content-between align-items-center mt-3">
-                        <span className="fw-bold">${producto.precio.toFixed(2)}</span>
-                        <button className="btn btn-sm btn-outline-primary">
-                          Añadir al carrito
-                        </button>
+                        <span className="fw-bold">
+                          {producto.precio.toFixed(2)}€
+                        </span>
                       </div>
                     )}
+                    {/* Mostrar las tallas */}
+                    {tallasPorProducto[producto.id] && (
+                      <div className="mt-3">
+                        <strong>Tallas disponibles:</strong>
+                        <div className="d-flex flex-wrap mt-2">
+                          {tallasPorProducto[producto.id].map((talla) => (
+                            <button
+                              key={talla.id}
+                              className={`btn btn-sm me-2 mb-2 ${
+                                tallasSeleccionadas[producto.id] === talla.talla
+                                  ? "btn-primary"
+                                  : "btn-outline-primary"
+                              }`}
+                              onClick={() =>
+                                handleTallaSeleccionada(producto.id, talla.talla)
+                              }
+                            >
+                              {talla.talla}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {/* Botón para añadir al carrito */}
+                    <button
+                      className="btn btn-sm btn-outline-primary mt-3"
+                      disabled={!tallasSeleccionadas[producto.id]}
+                    >
+                      {tallasSeleccionadas[producto.id]
+                        ? `Añadir al carrito (Talla: ${tallasSeleccionadas[producto.id]})`
+                        : "Selecciona una talla"}
+                    </button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -143,7 +222,6 @@ function CategoriaProductos() {
           </Row>
         )}
       </Container>
-      
       <div className="mt-5">
         <Footer />
       </div>

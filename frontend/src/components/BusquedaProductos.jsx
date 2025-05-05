@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Container, Row, Col, Card, Alert } from "react-bootstrap";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
-function CategoriaProductos() {
-  const { categoriaId } = useParams(); // Obtener el ID de la categoría de la URL
+function BusquedaProductos() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [nombreCategoria, setNombreCategoria] = useState(""); // Para almacenar el nombre de la categoría
-  const navigate = useNavigate(); // Para redirigir al usuario si es necesario
+
+  // Obtener el valor de 'q' de la query string
+  const params = new URLSearchParams(location.search);
+  const query = params.get("q");
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -23,9 +26,8 @@ function CategoriaProductos() {
           return;
         }
 
-        // Hacer la solicitud con el token en el encabezado
         const response = await axios.get(
-          `http://localhost:8080/api/productos/categoria/${categoriaId}`,
+          `http://localhost:8080/api/productos?nombre=${encodeURIComponent(query)}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,33 +35,13 @@ function CategoriaProductos() {
           }
         );
 
-        // También podríamos obtener el nombre de la categoría si la API lo proporciona
-        // Si no, puedes agregar otra llamada para obtener los detalles de la categoría
-        try {
-          const categoriaResponse = await axios.get(
-            `http://localhost:8080/api/categorias/${categoriaId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          if (categoriaResponse.data && categoriaResponse.data.nombre) {
-            setNombreCategoria(categoriaResponse.data.nombre);
-          }
-        } catch (catErr) {
-          console.error("Error al obtener el nombre de la categoría:", catErr);
-          // No establecemos error aquí para no interrumpir la carga de productos
-        }
-
         setProductos(response.data);
         setLoading(false);
       } catch (err) {
-        // Si el error es de autenticación o no se encuentra la categoría
         if (err.response && err.response.status === 401) {
           setError("Token inválido o expirado. Redirigiendo al inicio de sesión...");
-          localStorage.removeItem("token"); // Eliminar el token expirado
-          setTimeout(() => navigate("/"), 3000); // Redirigir a la página de inicio después de 3 segundos
+          localStorage.removeItem("token");
+          setTimeout(() => navigate("/"), 3000);
         } else {
           setError("Error al cargar los productos. Intente más tarde.");
         }
@@ -67,8 +49,13 @@ function CategoriaProductos() {
       }
     };
 
-    fetchProductos();
-  }, [categoriaId, navigate]); // Dependencia de navigate para que funcione correctamente en caso de redirección
+    if (query) {
+      fetchProductos();
+    } else {
+      setError("No se proporcionó un término de búsqueda.");
+      setLoading(false);
+    }
+  }, [query, navigate]);
 
   if (loading) {
     return (
@@ -91,9 +78,7 @@ function CategoriaProductos() {
       <div className="d-flex flex-column min-vh-100">
         <Navbar />
         <Container className="mt-5 pt-5">
-          <Alert variant="danger">
-            {error}
-          </Alert>
+          <Alert variant="danger">{error}</Alert>
         </Container>
         <div className="mt-auto">
           <Footer />
@@ -105,13 +90,10 @@ function CategoriaProductos() {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar />
-      
-      {/* Añadido className mt-5 pt-5 para dar más espacio en la parte superior */}
       <Container className="mt-5 pt-5 flex-grow-1">
-        <h2 className="mb-4">{nombreCategoria || "Productos de la Categoría"}</h2>
-        
+        <h2 className="mb-4">Resultados para "{query}"</h2>
         {productos.length === 0 ? (
-          <Alert variant="info">No hay productos disponibles en esta categoría.</Alert>
+          <Alert variant="info">No se encontraron productos.</Alert>
         ) : (
           <Row xs={1} md={2} lg={3} className="g-4">
             {productos.map((producto) => (
@@ -143,7 +125,6 @@ function CategoriaProductos() {
           </Row>
         )}
       </Container>
-      
       <div className="mt-5">
         <Footer />
       </div>
@@ -151,4 +132,4 @@ function CategoriaProductos() {
   );
 }
 
-export default CategoriaProductos;
+export default BusquedaProductos;

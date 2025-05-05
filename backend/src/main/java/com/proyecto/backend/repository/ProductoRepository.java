@@ -15,4 +15,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
             "ORDER BY p.precio DESC " +
             "LIMIT 4", nativeQuery = true)
     List<Producto> findProductosDestacados();
+    List<Producto> findByNombreContainingIgnoreCase(String nombre);
 }

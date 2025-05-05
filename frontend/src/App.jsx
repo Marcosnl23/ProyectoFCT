@@ -4,6 +4,7 @@ import Login from './components/auth/Login'
 import Welcome from './components/Welcome'
 import Register from './components/auth/Register'
 import CategoriaProductos from './components/CategoriaProductos'
+import BusquedaProductos from './components/BusquedaProductos'
 
 function App() {
   return (
@@ -13,6 +14,8 @@ function App() {
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/Register" element={<Register />} />
         <Route path="/categoria/:categoriaId" element={<CategoriaProductos />} />
+        <Route path="/buscar" element={<BusquedaProductos />} />
+
       </Routes>
     </Router>
   )

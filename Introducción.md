@@ -21,8 +21,6 @@ Se analizaron aspectos como:
 
 Esto nos permitió establecer buenas prácticas y evitar errores comunes.
 
-![Investigación comparativa](https://via.placeholder.com/800x400?text=Investigaci%C3%B3n+Comparativa)
-
 ---
 
 ### 📝 Introducción
@@ -73,8 +71,6 @@ Desarrollar una aplicación de tienda online de ropa que permita registrar usuar
 - Cursos de Spring Boot y React Native
 - Google Developers Console para OAuth
 
-![Stack tecnológico](https://via.placeholder.com/800x300?text=Stack+Tecnol%C3%B3gico)
-
 ---
 
 ## 🗓️ Semana del 21 al 27 de abril
@@ -84,8 +80,6 @@ Desarrollar una aplicación de tienda online de ropa que permita registrar usuar
 ### 🔧 Metodologías y Proceso de Trabajo
 
 Se siguió una metodología ágil basada en **Scrum**, dividiendo el desarrollo en sprints semanales. Se utilizó Trello para la gestión de tareas y control de avance.
-
-![Kanban Scrum](https://via.placeholder.com/600x300?text=Scrum+Board)
 
 #### Fases del proceso:
 

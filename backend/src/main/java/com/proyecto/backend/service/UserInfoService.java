@@ -71,4 +71,13 @@ public class UserInfoService implements UserDetailsService {
     public String encodePassword(String password) {
         return encoder.encode(password);
     }
+
+    public UserInfo getUserById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public Optional<UserInfo> obtenerUsuarioPorUsername(String username) {
+        return repository.findByUsername(username); // Devuelve un Optional<UserInfo>
+    }
+
 }

@@ -15,11 +15,6 @@ import { FaShippingFast, FaExchangeAlt, FaHeadset, FaClock } from "react-icons/f
 import "../css/CategoriaStyles.css";
 
 function Welcome() {
-  const [username, setUsername] = useState("");
-  const [rol, setRol] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [apellidos, setApellidos] = useState("");
-  const [email, setEmail] = useState("");
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,32 +60,6 @@ function Welcome() {
     }
   ];
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setUsername(decodedToken.sub || decodedToken.username);
-        setNombre(decodedToken.nombre || "");
-        setApellidos(decodedToken.apellidos || "");
-        setEmail(decodedToken.email || "");
-
-        if (
-          decodedToken.authorities &&
-          Array.isArray(decodedToken.authorities)
-        ) {
-          setRol(decodedToken.authorities[0].authority || "USER");
-        } else if (typeof decodedToken.role === "string") {
-          setRol(decodedToken.role);
-        } else {
-          setRol("USER");
-        }
-      } catch (error) {
-        console.error("Error al decodificar el token:", error);
-        setRol("USER");
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -122,34 +91,7 @@ function Welcome() {
 
 
 
-  const handleLogout = async () => {
-    try {
-      // Obtener el token del localStorage
-      const token = localStorage.getItem("token");
-      
-      // Llamar al endpoint de logout
-      await axios.post(
-        "http://localhost:8080/auth/api/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      
-      // Eliminar el token del localStorage
-      localStorage.removeItem("token");
-      
-      // Redirigir a la página de inicio
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-      // Aún así, limpiamos el localStorage y redirigimos
-      localStorage.removeItem("token");
-      window.location.href = "/";
-    }
-  };
+
 
   const handleCategoriaClick = (categoriaId) => {
     setSelectedCategory(categoriaId);
@@ -221,15 +163,7 @@ function Welcome() {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      <NavBar
-        logo={logo}
-        username={username}
-        nombre={nombre}
-        apellidos={apellidos}
-        email={email}
-        rol={rol}
-        onLogout={handleLogout}
-      />
+      <NavBar />
 
       <ImageCarousel
         images={images}

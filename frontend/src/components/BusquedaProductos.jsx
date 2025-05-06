@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Card, Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Alert, Form } from "react-bootstrap";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de Zustand
 
 function BusquedaProductos() {
   const location = useLocation();
   const navigate = useNavigate();
   const [productos, setProductos] = useState([]);
+  const [filteredProductos, setFilteredProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
 
-  // Obtener el valor de 'q' de la query string
+  // Zustand: Obtener favoritos y función para alternar favoritos
+  const { favoritos, toggleFavorito } = useFavoritosStore();
+
   const params = new URLSearchParams(location.search);
   const query = params.get("q");
 
@@ -36,6 +42,7 @@ function BusquedaProductos() {
         );
 
         setProductos(response.data);
+        setFilteredProductos(response.data);
         setLoading(false);
       } catch (err) {
         if (err.response && err.response.status === 401) {
@@ -56,6 +63,16 @@ function BusquedaProductos() {
       setLoading(false);
     }
   }, [query, navigate]);
+
+  const handleFilter = () => {
+    const filtered = productos.filter((producto) => {
+      const precio = producto.precio || 0;
+      const min = parseFloat(minPrice) || 0;
+      const max = parseFloat(maxPrice) || Infinity;
+      return precio >= min && precio <= max;
+    });
+    setFilteredProductos(filtered);
+  };
 
   if (loading) {
     return (
@@ -92,11 +109,49 @@ function BusquedaProductos() {
       <Navbar />
       <Container className="mt-5 pt-5 flex-grow-1">
         <h2 className="mb-4">Resultados para "{query}"</h2>
-        {productos.length === 0 ? (
+
+        {/* Filtros de precio */}
+        <Form className="mb-4">
+          <Row>
+            <Col xs={12} md={4}>
+              <Form.Group controlId="minPrice">
+                <Form.Label>Precio mínimo</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Ej: 10"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col xs={12} md={4}>
+              <Form.Group controlId="maxPrice">
+                <Form.Label>Precio máximo</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Ej: 100"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col xs={12} md={4} className="d-flex align-items-end">
+              <button
+                type="button"
+                className="btn btn-primary w-100"
+                onClick={handleFilter}
+              >
+                Filtrar
+              </button>
+            </Col>
+          </Row>
+        </Form>
+
+        {filteredProductos.length === 0 ? (
           <Alert variant="info">No se encontraron productos.</Alert>
         ) : (
           <Row xs={1} md={2} lg={3} className="g-4">
-            {productos.map((producto) => (
+            {filteredProductos.map((producto) => (
               <Col key={producto.id}>
                 <Card className="h-100 shadow-sm">
                   <div style={{ height: "300px", overflow: "hidden" }}>
@@ -118,6 +173,19 @@ function BusquedaProductos() {
                         </button>
                       </div>
                     )}
+                    {/* Botón de favoritos */}
+                    <button
+                      className={`btn btn-sm mt-3 ${
+                        favoritos.includes(producto.id)
+                          ? "btn-danger"
+                          : "btn-outline-danger"
+                      }`}
+                      onClick={() => toggleFavorito(producto.id)}
+                    >
+                      {favoritos.includes(producto.id)
+                        ? "Eliminar de Favoritos"
+                        : "Añadir a Favoritos"}
+                    </button>
                   </Card.Body>
                 </Card>
               </Col>

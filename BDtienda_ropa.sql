@@ -78,6 +78,16 @@ CREATE TABLE detalle_pedido (
     FOREIGN KEY (producto_id) REFERENCES productos(id)
 );
 
+-- Tabla de favoritos
+CREATE TABLE favoritos (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    producto_id BIGINT NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
+    UNIQUE (usuario_id, producto_id) -- Evitar duplicados
+);
+
 -- Insertar categorías
 INSERT INTO categorias (nombre, genero, imagen) VALUES 
 ('Camisetas', 'Hombre','https://static.bershka.net/assets/public/65e2/0ba0/a8a14d5a93f2/4addeef4fa20/slide_man_tshirts_-1/slide_man_tshirts_-1.jpg?ts=1743063395380'),

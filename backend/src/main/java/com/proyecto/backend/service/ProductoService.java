@@ -55,4 +55,9 @@ public class ProductoService {
     public List<Producto> obtenerProductosPorCategoria(Long id) {
         return productoRepository.findByCategoriaId(id);
     }
+
+    public List<Producto> buscarPorNombre(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCase(nombre);
+    }
+
 }

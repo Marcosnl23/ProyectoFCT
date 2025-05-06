@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Card, Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Alert, Button } from "react-bootstrap";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de Zustand
 
 function CategoriaProductos() {
   const { categoriaId } = useParams(); // Obtener el ID de la categoría de la URL
+  const { favoritos, toggleFavorito, cargarFavoritos } = useFavoritosStore(); // Obtener los IDs de favoritos y la función para alternar favoritos
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +16,11 @@ function CategoriaProductos() {
   const navigate = useNavigate(); // Para redirigir al usuario si es necesario
   const [tallasPorProducto, setTallasPorProducto] = useState({});
   const [tallasSeleccionadas, setTallasSeleccionadas] = useState({}); // Estado para las tallas seleccionadas por producto
+
+  // Cargar favoritos al montar el componente
+  useEffect(() => {
+    cargarFavoritos(); // Cargar los favoritos específicos del usuario actual
+  }, [cargarFavoritos]);
 
   // Obtener las tallas del producto
   const obtenerTallas = async (productoId) => {
@@ -137,7 +144,7 @@ function CategoriaProductos() {
     );
   }
 
-    const handleTallaSeleccionada = (productoId, talla) => {
+  const handleTallaSeleccionada = (productoId, talla) => {
     setTallasSeleccionadas((prevState) => ({
       ...prevState,
       [productoId]: prevState[productoId] === talla ? null : talla, // Deseleccionar si ya está seleccionada
@@ -181,6 +188,9 @@ function CategoriaProductos() {
                         <span className="fw-bold">
                           {producto.precio.toFixed(2)}€
                         </span>
+                        <button className="btn btn-sm btn-outline-primary">
+                          Añadir al carrito
+                        </button>
                       </div>
                     )}
                     {/* Mostrar las tallas */}
@@ -206,15 +216,20 @@ function CategoriaProductos() {
                         </div>
                       </div>
                     )}
-                    {/* Botón para añadir al carrito */}
-                    <button
-                      className="btn btn-sm btn-outline-primary mt-3"
-                      disabled={!tallasSeleccionadas[producto.id]}
+                    {/* Botón para añadir/eliminar de favoritos */}
+                    <Button
+                      variant={
+                        favoritos.includes(producto.id)
+                          ? "danger"
+                          : "outline-danger"
+                      }
+                      className="mt-3"
+                      onClick={() => toggleFavorito(producto.id)}
                     >
-                      {tallasSeleccionadas[producto.id]
-                        ? `Añadir al carrito (Talla: ${tallasSeleccionadas[producto.id]})`
-                        : "Selecciona una talla"}
-                    </button>
+                      {favoritos.includes(producto.id)
+                        ? "Eliminar de Favoritos"
+                        : "Añadir a Favoritos"}
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>

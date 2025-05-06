@@ -56,4 +56,10 @@ public class ProductoController {
     public List<Producto> obtenerProductosPorCategoria(@PathVariable Long id) {
         return productoService.obtenerProductosPorCategoria(id);
     }
+
+    @GetMapping(params = "nombre")
+    public List<Producto> buscarProductosPorNombre(@RequestParam String nombre) {
+        return productoService.buscarPorNombre(nombre);
+    }
+
 }

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 // Generar la clave dinámica para localStorage
 const generateStorageKey = () => {
@@ -25,7 +25,9 @@ const useCarritoStore = create(
       // Añadir un producto al carrito
       addToCarrito: (producto) => {
         const carritoActual = get().carrito;
-        const productoExistente = carritoActual.find((item) => item.id === producto.id);
+        const productoExistente = carritoActual.find(
+          (item) => item.id === producto.id
+        );
 
         if (productoExistente) {
           const carritoActualizado = carritoActual.map((item) =>
@@ -42,7 +44,9 @@ const useCarritoStore = create(
       // Eliminar un producto del carrito
       removeFromCarrito: (productoId) => {
         const carritoActual = get().carrito;
-        const carritoActualizado = carritoActual.filter((item) => item.id !== productoId);
+        const carritoActualizado = carritoActual.filter(
+          (item) => item.id !== productoId
+        );
         set({ carrito: carritoActualizado });
       },
 
@@ -75,21 +79,30 @@ const useCarritoStore = create(
         }
 
         // Calcular el total del pedido
-        const total = carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+        const total = carrito.reduce(
+          (acc, item) => acc + item.precio * item.cantidad,
+          0
+        );
 
-        // Obtener la fecha actual en formato ISO
-        const fecha = new Date().toISOString();
+      
+        const now = new Date();
+        const fecha = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
+          .toISOString()
+          .replace('Z', '');
 
         try {
           // Crear el pedido
-          const pedidoResponse = await fetch("http://localhost:8080/api/pedidos", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ username, total, fecha }),
-          });
+          const pedidoResponse = await fetch(
+            "http://localhost:8080/api/pedidos",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ username, total, fecha }),
+            }
+          );
 
           if (!pedidoResponse.ok) {
             throw new Error("Error al crear el pedido");
@@ -97,7 +110,7 @@ const useCarritoStore = create(
 
           const pedido = await pedidoResponse.json();
 
-          // Crear los detalles del pedido
+
           for (const producto of carrito) {
             await fetch("http://localhost:8080/api/detalles-pedido", {
               method: "POST",
@@ -107,11 +120,13 @@ const useCarritoStore = create(
               },
               body: JSON.stringify({
                 pedido: { id: pedido.id },
-                productoId: producto.id,
+                producto: { id: producto.id },
                 cantidad: producto.cantidad,
                 precio: producto.precio,
               }),
+              
             });
+            
           }
 
           // Vaciar el carrito después de realizar el pedido

@@ -1,52 +1,46 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
-// Generar la clave dinámica para localStorage
 const generateStorageKey = () => {
   const token = localStorage.getItem("token");
   if (!token) return "favoritos-anonimo";
   try {
     const decodedToken = jwtDecode(token);
-    const username = decodedToken.sub || decodedToken.username; // Ajusta según el campo del token
+    const username = decodedToken.sub || decodedToken.username;
     return `favoritos_${username}`;
   } catch {
     return "favoritos-anonimo";
   }
 };
 
-const storageKey = generateStorageKey(); // Generar la clave antes de inicializar el store
-
 const useFavoritosStore = create(
   persist(
     (set, get) => ({
-      favoritos: [], // Estado inicial vacío
+      favoritos: [],
+      isLoading: false,
+      error: null,
 
-      // Alternar un producto en favoritos
       toggleFavorito: async (productoId) => {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.error("Token no encontrado. Por favor, inicie sesión.");
+          // Manejar favoritos localmente si no hay token
+          const favoritosActuales = get().favoritos;
+          const esFavorito = favoritosActuales.includes(productoId);
+          const nuevosFavoritos = esFavorito
+            ? favoritosActuales.filter((id) => id !== productoId)
+            : [...favoritosActuales, productoId];
+          set({ favoritos: nuevosFavoritos });
           return;
         }
 
-        // Decodificar el token para obtener el username
-        let username;
+        set({ isLoading: true, error: null });
         try {
           const decodedToken = jwtDecode(token);
-          username = decodedToken.sub || decodedToken.username; // Ajusta según el campo del token
-        } catch (error) {
-          console.error("Error al decodificar el token:", error);
-          return;
-        }
+          const username = decodedToken.sub || decodedToken.username;
+          const favoritosActuales = get().favoritos;
+          const esFavorito = favoritosActuales.includes(productoId);
 
-        const favoritosUsuario = get().favoritos;
-
-        // Verificar si el producto ya está en favoritos
-        const esFavorito = favoritosUsuario.includes(productoId);
-
-        try {
-          // Sincronizar con el backend
           const response = await fetch(
             `http://localhost:8080/api/favoritos?username=${username}&productoId=${productoId}`,
             {
@@ -58,47 +52,31 @@ const useFavoritosStore = create(
             }
           );
 
-          if (!response.ok) {
-            throw new Error("Error al sincronizar con el backend");
-          }
+          if (!response.ok) throw new Error("Error al sincronizar con el backend");
 
-          // Actualizar los favoritos en el estado solo si la operación fue exitosa
           const nuevosFavoritos = esFavorito
-            ? favoritosUsuario.filter((id) => id !== productoId) // Eliminar si ya está en favoritos
-            : [...favoritosUsuario, productoId]; // Añadir si no está en favoritos
+            ? favoritosActuales.filter((id) => id !== productoId)
+            : [...favoritosActuales, productoId];
 
-          set({ favoritos: nuevosFavoritos });
-
-          // Sincronizar con localStorage manualmente
-          const storage = localStorage.getItem(storageKey);
-          const parsedStorage = storage ? JSON.parse(storage) : {};
-          parsedStorage.favoritos = nuevosFavoritos;
-          localStorage.setItem(storageKey, JSON.stringify(parsedStorage));
-        } catch (err) {
-          console.error("Error al sincronizar favoritos con el backend:", err);
+          set({ favoritos: nuevosFavoritos, isLoading: false });
+        } catch (error) {
+          set({ error: error.message, isLoading: false });
+          console.error("Error en toggleFavorito:", error);
         }
       },
 
-      // Cargar favoritos desde el backend
       cargarFavoritos: async () => {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.error("Token no encontrado. Por favor, inicie sesión.");
+          // Si no hay token, mantener los favoritos locales
           return;
         }
 
-        // Decodificar el token para obtener el username
-        let username;
+        set({ isLoading: true, error: null });
         try {
           const decodedToken = jwtDecode(token);
-          username = decodedToken.sub || decodedToken.username; // Ajusta según el campo del token
-        } catch (error) {
-          console.error("Error al decodificar el token:", error);
-          return;
-        }
+          const username = decodedToken.sub || decodedToken.username;
 
-        try {
-          // Obtener los favoritos del backend
           const response = await fetch(
             `http://localhost:8080/api/favoritos?username=${username}`,
             {
@@ -110,27 +88,34 @@ const useFavoritosStore = create(
             }
           );
 
-          if (!response.ok) {
-            throw new Error("Error al cargar favoritos desde el backend");
-          }
+          if (!response.ok) throw new Error("Error al cargar favoritos");
 
           const favoritos = await response.json();
-          set({ favoritos }); // Actualizar el estado con los favoritos obtenidos
-
-          // Sincronizar con localStorage manualmente
-          const storage = localStorage.getItem(storageKey);
-          const parsedStorage = storage ? JSON.parse(storage) : {};
-          parsedStorage.favoritos = favoritos;
-          localStorage.setItem(storageKey, JSON.stringify(parsedStorage));
-        } catch (err) {
-          console.error("Error al cargar favoritos desde el backend:", err);
+          set({ favoritos, isLoading: false });
+        } catch (error) {
+          set({ error: error.message, isLoading: false });
+          console.error("Error en cargarFavoritos:", error);
         }
       },
+
+      limpiarFavoritos: () => {
+        set({ favoritos: [], error: null });
+      },
+
+      getFavoritosCount: () => {
+        return get().favoritos.length;
+      },
+
+      esFavorito: (productoId) => {
+        return get().favoritos.includes(productoId);
+      }
     }),
     {
-      name: storageKey, // Usar la clave generada dinámicamente
-      getStorage: () => localStorage, // Usar localStorage como almacenamiento
-      partialize: (state) => ({ favoritos: state.favoritos }), // Persistir solo el estado de favoritos
+      name: generateStorageKey(),
+      getStorage: () => localStorage,
+      partialize: (state) => ({
+        favoritos: state.favoritos
+      })
     }
   )
 );

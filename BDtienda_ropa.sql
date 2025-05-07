@@ -139,3 +139,4 @@ SELECT * FROM productos_tallas;
 SELECT * FROM carrito;
 SELECT * FROM pedidos;
 SELECT * FROM detalle_pedido;
+SELECT * FROM favoritos;

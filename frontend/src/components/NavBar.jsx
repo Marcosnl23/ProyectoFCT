@@ -4,7 +4,8 @@ import { Heart, Bag, Search, Person } from "react-bootstrap-icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
 import axios from "axios";
-import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de Zustand
+import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de favoritos
+import useCarritoStore from "../components/store/useCarritoStore"; // Importar el store del carrito
 import "../css/Navbar.css";
 import logo from "../assets/logo.png";
 
@@ -16,8 +17,11 @@ function NavBar() {
   const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
 
-  // Zustand: Obtener favoritos
   const { favoritos } = useFavoritosStore();
+  const { carrito } = useCarritoStore(); // Obtener el carrito desde el store
+
+  // Calcular el número total de productos en el carrito
+  const totalProductosCarrito = carrito.reduce((acc, item) => acc + item.cantidad, 0);
 
   // Estado para los datos del usuario
   const [user, setUser] = useState({
@@ -222,8 +226,11 @@ function NavBar() {
             </Nav.Link>
 
             {/* Ícono del Carrito */}
-            <Nav.Link href="/cart" className={`icon-link ${isActive("/cart")}`}>
+            <Nav.Link href="/cart" className={`icon-link ${isActive("/cart")}`} title="Carrito">
               <Bag size={20} />
+              {totalProductosCarrito > 0 && (
+                <span className="badge bg-primary text-white ms-1">{totalProductosCarrito}</span>
+              )}
             </Nav.Link>
 
             {/* Menú de Usuario */}

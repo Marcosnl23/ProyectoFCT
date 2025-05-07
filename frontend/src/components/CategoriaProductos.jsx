@@ -4,11 +4,13 @@ import axios from "axios";
 import { Container, Row, Col, Card, Alert, Button } from "react-bootstrap";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
-import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de Zustand
+import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de favoritos
+import useCarritoStore from "../components/store/useCarritoStore"; // Importar el store del carrito
 
 function CategoriaProductos() {
   const { categoriaId } = useParams(); // Obtener el ID de la categoría de la URL
-  const { favoritos, toggleFavorito, cargarFavoritos } = useFavoritosStore(); // Obtener los IDs de favoritos y la función para alternar favoritos
+  const { favoritos, toggleFavorito } = useFavoritosStore(); // Obtener los IDs de favoritos y la función para alternar favoritos
+  const { addToCarrito } = useCarritoStore(); // Obtener la función para añadir productos al carrito
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,11 +18,6 @@ function CategoriaProductos() {
   const navigate = useNavigate(); // Para redirigir al usuario si es necesario
   const [tallasPorProducto, setTallasPorProducto] = useState({});
   const [tallasSeleccionadas, setTallasSeleccionadas] = useState({}); // Estado para las tallas seleccionadas por producto
-
-  // Cargar favoritos al montar el componente
-  useEffect(() => {
-    cargarFavoritos(); // Cargar los favoritos específicos del usuario actual
-  }, [cargarFavoritos]);
 
   // Obtener las tallas del producto
   const obtenerTallas = async (productoId) => {
@@ -151,6 +148,20 @@ function CategoriaProductos() {
     }));
   };
 
+  const handleAñadirAlCarrito = (producto) => {
+    const tallaSeleccionada = tallasSeleccionadas[producto.id];
+    if (tallasPorProducto[producto.id] && !tallaSeleccionada) {
+      alert("Por favor, selecciona una talla antes de añadir al carrito.");
+      return;
+    }
+
+    addToCarrito({
+      ...producto,
+      talla: tallaSeleccionada || null, // Añadir la talla seleccionada o null si no aplica
+    });
+    alert("Producto añadido al carrito.");
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar />
@@ -188,7 +199,10 @@ function CategoriaProductos() {
                         <span className="fw-bold">
                           {producto.precio.toFixed(2)}€
                         </span>
-                        <button className="btn btn-sm btn-outline-primary">
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => handleAñadirAlCarrito(producto)}
+                        >
                           Añadir al carrito
                         </button>
                       </div>

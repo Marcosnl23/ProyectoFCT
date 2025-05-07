@@ -4,7 +4,8 @@ import axios from "axios";
 import { Container, Row, Col, Card, Alert, Form } from "react-bootstrap";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
-import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de Zustand
+import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de favoritos
+import useCarritoStore from "../components/store/useCarritoStore"; // Importar el store del carrito
 
 function BusquedaProductos() {
   const location = useLocation();
@@ -15,12 +16,45 @@ function BusquedaProductos() {
   const [error, setError] = useState(null);
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [tallasPorProducto, setTallasPorProducto] = useState({});
+  const [tallasSeleccionadas, setTallasSeleccionadas] = useState({}); // Estado para las tallas seleccionadas por producto
 
   // Zustand: Obtener favoritos y función para alternar favoritos
   const { favoritos, toggleFavorito } = useFavoritosStore();
+  const { addToCarrito } = useCarritoStore(); // Obtener la función para añadir productos al carrito
 
   const params = new URLSearchParams(location.search);
   const query = params.get("q");
+
+  // Obtener las tallas del producto
+  const obtenerTallas = async (productoId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No se encontró el token. Por favor, inicie sesión.");
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:8080/api/tallas/producto/${productoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setTallasPorProducto((prevState) => ({
+        ...prevState,
+        [productoId]: response.data,
+      }));
+    } catch (err) {
+      console.error(
+        `Error al obtener las tallas para el producto ${productoId}:`,
+        err
+      );
+    }
+  };
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -43,6 +77,12 @@ function BusquedaProductos() {
 
         setProductos(response.data);
         setFilteredProductos(response.data);
+
+        // Obtener las tallas para cada producto
+        response.data.forEach((producto) => {
+          obtenerTallas(producto.id);
+        });
+
         setLoading(false);
       } catch (err) {
         if (err.response && err.response.status === 401) {
@@ -72,6 +112,27 @@ function BusquedaProductos() {
       return precio >= min && precio <= max;
     });
     setFilteredProductos(filtered);
+  };
+
+  const handleTallaSeleccionada = (productoId, talla) => {
+    setTallasSeleccionadas((prevState) => ({
+      ...prevState,
+      [productoId]: prevState[productoId] === talla ? null : talla, // Deseleccionar si ya está seleccionada
+    }));
+  };
+
+  const handleAñadirAlCarrito = (producto) => {
+    const tallaSeleccionada = tallasSeleccionadas[producto.id];
+    if (tallasPorProducto[producto.id] && !tallaSeleccionada) {
+      alert("Por favor, selecciona una talla antes de añadir al carrito.");
+      return;
+    }
+
+    addToCarrito({
+      ...producto,
+      talla: tallaSeleccionada || null, // Añadir la talla seleccionada o null si no aplica
+    });
+    alert("Producto añadido al carrito.");
   };
 
   if (loading) {
@@ -168,9 +229,35 @@ function BusquedaProductos() {
                     {producto.precio && (
                       <div className="d-flex justify-content-between align-items-center mt-3">
                         <span className="fw-bold">{producto.precio.toFixed(2)}€</span>
-                        <button className="btn btn-sm btn-outline-primary">
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => handleAñadirAlCarrito(producto)}
+                        >
                           Añadir al carrito
                         </button>
+                      </div>
+                    )}
+                    {/* Mostrar las tallas */}
+                    {tallasPorProducto[producto.id] && (
+                      <div className="mt-3">
+                        <strong>Tallas disponibles:</strong>
+                        <div className="d-flex flex-wrap mt-2">
+                          {tallasPorProducto[producto.id].map((talla) => (
+                            <button
+                              key={talla.id}
+                              className={`btn btn-sm me-2 mb-2 ${
+                                tallasSeleccionadas[producto.id] === talla.talla
+                                  ? "btn-primary"
+                                  : "btn-outline-primary"
+                              }`}
+                              onClick={() =>
+                                handleTallaSeleccionada(producto.id, talla.talla)
+                              }
+                            >
+                              {talla.talla}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                     {/* Botón de favoritos */}

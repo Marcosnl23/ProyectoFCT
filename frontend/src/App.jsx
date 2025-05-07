@@ -7,6 +7,7 @@ import CategoriaProductos from './components/CategoriaProductos';
 import BusquedaProductos from './components/BusquedaProductos';
 import Favoritos from './components/Favoritos';
 import axios from 'axios';
+import Carrito from './components/Carrito';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/categoria/:categoriaId" element={<CategoriaProductos />} />
         <Route path="/buscar" element={<BusquedaProductos />} />
         <Route path="/favoritos" element={<Favoritos />} />
+        <Route path="/cart" element={<Carrito/>} />
       </Routes>
     </Router>
   );

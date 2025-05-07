@@ -4,10 +4,10 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import useFavoritosStore from "../components/store/useFavoritosStore";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode"; // Asegúrate de tener instalada esta librería
+import {jwtDecode} from "jwt-decode"; 
 
 function Favoritos() {
-  const { favoritos, toggleFavorito, cargarFavoritos } = useFavoritosStore(); // Usar Zustand para manejar favoritos
+  const { favoritos, toggleFavorito } = useFavoritosStore(); // Usar Zustand para manejar favoritos
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Estado para el indicador de carga
@@ -47,7 +47,6 @@ function Favoritos() {
           },
         });
         setProductos(response.data); // Asume que el backend devuelve los productos favoritos directamente
-        cargarFavoritos(); // Sincronizar Zustand con el localStorage
       } catch (err) {
         console.error("Error al obtener los favoritos:", err);
         setError("Error al cargar los favoritos. Por favor, intente más tarde.");
@@ -57,7 +56,7 @@ function Favoritos() {
     };
 
     fetchFavoritos();
-  }, [cargarFavoritos]);
+  }, []);
 
   // Manejar la eliminación de un producto de favoritos
   const handleEliminarFavorito = (productoId) => {
@@ -76,6 +75,7 @@ function Favoritos() {
         {loading ? (
           <div className="d-flex justify-content-center align-items-center">
             <Spinner animation="border" variant="primary" />
+            <span className="ms-2">Cargando tus favoritos...</span>
           </div>
         ) : productos.length === 0 ? (
           <Alert variant="info">No tienes productos en favoritos.</Alert>

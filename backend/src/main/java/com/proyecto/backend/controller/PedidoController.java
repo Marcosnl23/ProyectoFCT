@@ -1,15 +1,21 @@
 package com.proyecto.backend.controller;
 
+import com.proyecto.backend.model.DetallePedido;
 import com.proyecto.backend.model.Pedido;
+import com.proyecto.backend.model.Producto;
 import com.proyecto.backend.model.UserInfo;
+import com.proyecto.backend.repository.ProductoRepository;
+import com.proyecto.backend.repository.UserInfoRepository;
 import com.proyecto.backend.service.PedidoService;
+import com.proyecto.backend.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.proyecto.backend.repository.UserInfoRepository;
-import java.util.Map;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -17,39 +23,67 @@ public class PedidoController {
 
     @Autowired
     private PedidoService pedidoService;
+
     @Autowired
     private UserInfoRepository userInfoRepository;
 
-    // Crear un nuevo pedido
+    @Autowired
+    private ProductoRepository productoRepository;
+
+    @Autowired
+    private JwtService jwtService;
+
     @PostMapping
     public ResponseEntity<Pedido> crearPedido(@RequestBody Map<String, Object> payload) {
         String username = (String) payload.get("username");
         Double total = Double.valueOf(payload.get("total").toString());
-        String fechaStr = (String) payload.get("fecha"); // Fecha opcional
+        String fechaStr = (String) payload.get("fecha");
 
-        // Buscar el usuario por su username
         UserInfo usuario = userInfoRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Crear el pedido
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
         pedido.setTotal(total);
+        pedido.setFecha(fechaStr != null ? LocalDateTime.parse(fechaStr) : LocalDateTime.now());
 
-        // Si se envía una fecha, usarla; de lo contrario, usar la fecha actual
-        if (fechaStr != null) {
-            pedido.setFecha(LocalDateTime.parse(fechaStr)); // Asegúrate de que el formato sea compatible
-        } else {
-            pedido.setFecha(LocalDateTime.now());
+        // Procesar detalles
+        List<Map<String, Object>> detallesPayload = (List<Map<String, Object>>) payload.get("detalles");
+        List<DetallePedido> detalles = new ArrayList<>();
+
+        for (Map<String, Object> detalleData : detallesPayload) {
+            Number productoIdNum = (Number) detalleData.get("productoId");
+            Long productoId = productoIdNum.longValue();
+
+            Producto producto = productoRepository.findById(productoId)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            Integer cantidad = ((Number) detalleData.get("cantidad")).intValue();
+            Double precio = Double.valueOf(detalleData.get("precio").toString());
+
+            DetallePedido detalle = new DetallePedido();
+            detalle.setPedido(pedido);
+            detalle.setProducto(producto);
+            detalle.setCantidad(cantidad);
+            detalle.setPrecio(precio);
+
+            detalles.add(detalle);
         }
 
-        Pedido pedidoCreado = pedidoService.crearPedido(pedido);
-        return ResponseEntity.ok(pedidoCreado);
+        pedido.setDetalles(detalles);
+
+        // Guardar pedido
+        Pedido pedidoGuardado = pedidoService.crearPedido(pedido);
+
+        // Devolver el pedido completo
+        return ResponseEntity.ok(pedidoGuardado);
     }
 
-    // Obtener todos los pedidos de un usuario
-    @GetMapping("/usuario/{usuarioId}")
-    public List<Pedido> obtenerPedidosDeUsuario(@PathVariable Long usuarioId) {
-        return pedidoService.obtenerPedidosDeUsuario(usuarioId);
+    @GetMapping("/usuario")
+    public List<Pedido> obtenerPedidosDeUsuario(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+        String username = jwtService.extractUsername(token);
+        return pedidoService.obtenerPedidosDeUsuarioPorUsername(username);
     }
 }
+

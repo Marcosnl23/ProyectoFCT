@@ -24,8 +24,6 @@ function Carrito() {
       item.id === id ? {...item, cantidad: nuevaCantidad} : item
     );
     
-    // Actualizar el carrito en el store (esto dependerá de cómo esté implementado useCarritoStore)
-    // Esta implementación es simulada y deberá adaptarse según la implementación real
     useCarritoStore.setState({ carrito: carritoActualizado });
   };
 

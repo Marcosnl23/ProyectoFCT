@@ -62,7 +62,7 @@ const useCarritoStore = create(
           console.error("Token no encontrado. Por favor, inicie sesión.");
           return;
         }
-
+      
         let username;
         try {
           const decodedToken = jwtDecode(token);
@@ -71,71 +71,57 @@ const useCarritoStore = create(
           console.error("Error al decodificar el token:", error);
           return;
         }
-
+      
         const carrito = get().carrito;
         if (carrito.length === 0) {
           console.error("El carrito está vacío.");
           return;
         }
-
+      
         // Calcular el total del pedido
         const total = carrito.reduce(
           (acc, item) => acc + item.precio * item.cantidad,
           0
         );
-
       
         const now = new Date();
-        const fecha = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
+        const fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
           .toISOString()
-          .replace('Z', '');
-
+          .replace("Z", "");
+      
         try {
-          // Crear el pedido
-          const pedidoResponse = await fetch(
-            "http://localhost:8080/api/pedidos",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ username, total, fecha }),
-            }
-          );
-
+          // Crear el pedido con sus detalles
+          const pedidoResponse = await fetch("http://localhost:8080/api/pedidos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              username,
+              total,
+              fecha,
+              detalles: carrito.map((producto) => ({
+                productoId: producto.id,
+                cantidad: producto.cantidad,
+                precio: producto.precio,
+              })),              
+            }),
+          });
+      
           if (!pedidoResponse.ok) {
             throw new Error("Error al crear el pedido");
           }
-
+      
           const pedido = await pedidoResponse.json();
-
-
-          for (const producto of carrito) {
-            await fetch("http://localhost:8080/api/detalles-pedido", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                pedido: { id: pedido.id },
-                producto: { id: producto.id },
-                cantidad: producto.cantidad,
-                precio: producto.precio,
-              }),
-              
-            });
-            
-          }
-
+      
           // Vaciar el carrito después de realizar el pedido
           set({ carrito: [] });
           console.log("Pedido creado con éxito:", pedido);
         } catch (error) {
           console.error("Error al crear el pedido:", error);
         }
-      },
+      }
     }),
     {
       name: storageKey,

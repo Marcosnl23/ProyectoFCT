@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Navbar, Container, Nav, NavDropdown, Form, Button, InputGroup, ListGroup } from "react-bootstrap";
+import {
+  Navbar,
+  Container,
+  Nav,
+  NavDropdown,
+  Form,
+  Button,
+  InputGroup,
+  ListGroup,
+} from "react-bootstrap";
 import { Heart, Bag, Search, Person } from "react-bootstrap-icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de favoritos
 import useCarritoStore from "../components/store/useCarritoStore"; // Importar el store del carrito
@@ -21,7 +30,10 @@ function NavBar() {
   const { carrito } = useCarritoStore(); // Obtener el carrito desde el store
 
   // Calcular el número total de productos en el carrito
-  const totalProductosCarrito = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+  const totalProductosCarrito = carrito.reduce(
+    (acc, item) => acc + item.cantidad,
+    0
+  );
 
   // Estado para los datos del usuario
   const [user, setUser] = useState({
@@ -40,7 +52,9 @@ function NavBar() {
         const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000; // Tiempo actual en segundos
         if (decodedToken.exp < currentTime) {
-          console.warn("El token ha expirado. Redirigiendo al inicio de sesión...");
+          console.warn(
+            "El token ha expirado. Redirigiendo al inicio de sesión..."
+          );
           localStorage.removeItem("token");
           navigate("/login");
         } else {
@@ -49,7 +63,10 @@ function NavBar() {
             nombre: decodedToken.nombre || "",
             apellidos: decodedToken.apellidos || "",
             email: decodedToken.email || "",
-            rol: decodedToken.authorities?.[0]?.authority || decodedToken.role || "USER",
+            rol:
+              decodedToken.authorities?.[0]?.authority ||
+              decodedToken.role ||
+              "USER",
           });
         }
       } catch (error) {
@@ -91,7 +108,9 @@ function NavBar() {
 
       try {
         const response = await fetch(
-          `http://localhost:8080/api/productos?nombre=${encodeURIComponent(searchQuery)}`,
+          `http://localhost:8080/api/productos?nombre=${encodeURIComponent(
+            searchQuery
+          )}`,
           {
             method: "GET",
             headers: {
@@ -161,10 +180,19 @@ function NavBar() {
   };
 
   return (
-    <Navbar expand="lg" fixed="top" className={`custom-navbar ${isScrolled ? "scrolled" : ""}`}>
+    <Navbar
+      expand="lg"
+      fixed="top"
+      className={`custom-navbar ${isScrolled ? "scrolled" : ""}`}
+    >
       <Container>
         <Navbar.Brand href="/welcome" className="d-flex align-items-center">
-          <img src={logo} height="36" className="d-inline-block align-top me-2" alt="Logo" />
+          <img
+            src={logo}
+            height="36"
+            className="d-inline-block align-top me-2"
+            alt="Logo"
+          />
           <span className="brand-text">Marcos Streetwear</span>
         </Navbar.Brand>
 
@@ -172,14 +200,23 @@ function NavBar() {
 
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
-            <Nav.Link href="/welcome" className={`nav-link-custom mx-2 ${isActive("/welcome")}`}>
+            <Nav.Link
+              href="/welcome"
+              className={`nav-link-custom mx-2 ${isActive("/welcome")}`}
+            >
               Home
             </Nav.Link>
-            <Nav.Link href="/Contacto" className={`nav-link-custom mx-2 ${isActive("/Contacto")}`}>
+            <Nav.Link
+              href="/Contacto"
+              className={`nav-link-custom mx-2 ${isActive("/Contacto")}`}
+            >
               Contacto
             </Nav.Link>
 
-            <Form onSubmit={handleSearch} className="d-flex mx-2 position-relative">
+            <Form
+              onSubmit={handleSearch}
+              className="d-flex mx-2 position-relative"
+            >
               <InputGroup className="rounded-pill border overflow-hidden bg-light">
                 <Form.Control
                   type="search"
@@ -190,7 +227,11 @@ function NavBar() {
                   className="border-0 bg-transparent shadow-none"
                   autoComplete="off"
                 />
-                <Button variant="transparent" type="submit" className="d-flex align-items-center justify-content-center">
+                <Button
+                  variant="transparent"
+                  type="submit"
+                  className="d-flex align-items-center justify-content-center"
+                >
                   <Search size={16} />
                 </Button>
               </InputGroup>
@@ -222,27 +263,44 @@ function NavBar() {
               title="Favoritos"
             >
               <Heart size={20} />
-              <span className="badge bg-danger text-white ms-1">{favoritos.length}</span>
+              <span className="badge bg-danger text-white ms-1">
+                {favoritos.length}
+              </span>
             </Nav.Link>
 
             {/* Ícono del Carrito */}
-            <Nav.Link href="/cart" className={`icon-link ${isActive("/cart")}`} title="Carrito">
+            <Nav.Link
+              href="/cart"
+              className={`icon-link ${isActive("/cart")}`}
+              title="Carrito"
+            >
               <Bag size={20} />
               {totalProductosCarrito > 0 && (
-                <span className="badge bg-primary text-white ms-1">{totalProductosCarrito}</span>
+                <span className="badge bg-primary text-white ms-1">
+                  {totalProductosCarrito}
+                </span>
               )}
             </Nav.Link>
 
             {/* Menú de Usuario */}
             <NavDropdown
               align="end"
-              title={<span className="user-dropdown"><Person size={20} className="person-icon" /></span>}
+              title={
+                <span className="user-dropdown">
+                  <Person size={20} className="person-icon" />
+                </span>
+              }
               id="basic-nav-dropdown"
               className="user-dropdown-container"
             >
-              <NavDropdown.Item className="px-4 py-3" style={{ minWidth: "250px" }}>
+              <NavDropdown.Item
+                className="px-4 py-3"
+                style={{ minWidth: "250px" }}
+              >
                 <div className="d-flex flex-column">
-                  <strong>{user.nombre} {user.apellidos}</strong>
+                  <strong>
+                    {user.nombre} {user.apellidos}
+                  </strong>
                   <small className="text-muted">{user.email}</small>
                 </div>
               </NavDropdown.Item>
@@ -251,6 +309,13 @@ function NavBar() {
                   <i className="bi bi-gear me-2"></i> Panel Admin
                 </NavDropdown.Item>
               )}
+              <NavDropdown.Item
+                href="/historial"
+                className={isActive("/historial")}
+              >
+                <i className="bi bi-clock-history me-2"></i> Historial de
+                Pedidos
+              </NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout} className="logout-item">
                 <i className="bi bi-box-arrow-right me-2"></i> Cerrar Sesión

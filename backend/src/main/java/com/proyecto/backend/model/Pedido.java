@@ -5,6 +5,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "pedidos")
 @Getter @Setter
@@ -21,7 +23,8 @@ public class Pedido {
 
     private LocalDateTime fecha = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // Indica que esta es la parte "padre" de la relación
     private List<DetallePedido> detalles;
 
     public Pedido(UserInfo usuario, Double total, List<DetallePedido> detalles) {

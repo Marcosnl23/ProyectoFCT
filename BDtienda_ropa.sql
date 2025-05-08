@@ -48,16 +48,6 @@ CREATE TABLE productos_tallas (
     FOREIGN KEY (talla_id) REFERENCES tallas(id)
 );
 
--- Tabla de carrito de compras
-CREATE TABLE carrito (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id BIGINT,
-    producto_id BIGINT,
-    cantidad INT NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-    FOREIGN KEY (producto_id) REFERENCES productos(id)
-);
-
 -- Tabla de pedidos
 CREATE TABLE pedidos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -136,7 +126,7 @@ SELECT * FROM productos;
 SELECT * FROM categorias;
 SELECT * FROM tallas;
 SELECT * FROM productos_tallas;
-SELECT * FROM carrito;
 SELECT * FROM pedidos;
 SELECT * FROM detalle_pedido;
 SELECT * FROM favoritos;
+

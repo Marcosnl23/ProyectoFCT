@@ -8,6 +8,7 @@ import BusquedaProductos from './components/BusquedaProductos';
 import Favoritos from './components/Favoritos';
 import Carrito from './components/Carrito';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import HistorialPedidos from '../src/components/HistorialPedidos';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/buscar" element={<BusquedaProductos />} />
           <Route path="/favoritos" element={<Favoritos />} />
           <Route path="/cart" element={<Carrito />} />
+          <Route path="/historial" element={<HistorialPedidos/>} />
         </Route>
       </Routes>
     </Router>

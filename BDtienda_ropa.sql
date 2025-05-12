@@ -130,3 +130,5 @@ SELECT * FROM pedidos;
 SELECT * FROM detalle_pedido;
 SELECT * FROM favoritos;
 
+UPDATE usuarios SET rol = 'admin' WHERE id = '1';
+

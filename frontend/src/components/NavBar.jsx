@@ -45,37 +45,38 @@ function NavBar() {
   });
 
   // Decodificar el token y obtener los datos del usuario
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        const currentTime = Date.now() / 1000; // Tiempo actual en segundos
-        if (decodedToken.exp < currentTime) {
-          console.warn(
-            "El token ha expirado. Redirigiendo al inicio de sesión..."
-          );
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          console.log("Token decodificado:", decodedToken);
+          const currentTime = Date.now() / 1000;
+  
+          if (decodedToken.exp < currentTime) {
+            console.warn("El token ha expirado. Redirigiendo al inicio de sesión...");
+            localStorage.removeItem("token");
+            navigate("/login");
+          } else {
+            // Extraer el rol correctamente del array role
+            const rol = decodedToken.role?.[0]?.authority || "USER";
+            console.log("Rol extraído:", rol);
+  
+            setUser({
+              username: decodedToken.sub || decodedToken.username || "",
+              nombre: decodedToken.nombre || "",
+              apellidos: decodedToken.apellidos || "",
+              email: decodedToken.email || "",
+              rol: rol
+            });
+          }
+        } catch (error) {
+          console.error("Error al decodificar el token:", error);
           localStorage.removeItem("token");
           navigate("/login");
-        } else {
-          setUser({
-            username: decodedToken.sub || decodedToken.username || "",
-            nombre: decodedToken.nombre || "",
-            apellidos: decodedToken.apellidos || "",
-            email: decodedToken.email || "",
-            rol:
-              decodedToken.authorities?.[0]?.authority ||
-              decodedToken.role ||
-              "USER",
-          });
         }
-      } catch (error) {
-        console.error("Error al decodificar el token:", error);
-        localStorage.removeItem("token");
-        navigate("/login");
       }
-    }
-  }, [navigate]);
+    }, [navigate]);
 
   // Manejar el scroll para cambiar el estilo del navbar
   useEffect(() => {
@@ -304,7 +305,7 @@ function NavBar() {
                   <small className="text-muted">{user.email}</small>
                 </div>
               </NavDropdown.Item>
-              {user.rol === "ADMIN" && (
+              {user.rol?.toLowerCase() === "admin" && (
                 <NavDropdown.Item href="/admin" className={isActive("/admin")}>
                   <i className="bi bi-gear me-2"></i> Panel Admin
                 </NavDropdown.Item>

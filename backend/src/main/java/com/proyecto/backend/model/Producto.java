@@ -1,7 +1,10 @@
 package com.proyecto.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "productos")
@@ -19,14 +22,18 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    private List<ProductoTalla> tallas;
 
-    public Producto(Long id, String nombre, String descripcion, Double precio,String imagen, Categoria categoria) {
+    public Producto(Long id, String nombre, String descripcion, Double precio,String imagen, Categoria categoria, List<ProductoTalla> tallas) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
         this.imagen = imagen;
         this.categoria = categoria;
+        this.tallas = tallas;
     }
 
     public Producto() {
@@ -78,6 +85,14 @@ public class Producto {
 
     public void setImagen(String imagen) {
         this.imagen = imagen;
+    }
+
+    public List<ProductoTalla> getTallas() {
+        return tallas;
+    }
+
+    public void setTallas(List<ProductoTalla> tallas) {
+        this.tallas = tallas;
     }
 }
 

@@ -13,11 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.proyecto.backend.service.GoogleAuthService;
 import com.proyecto.backend.repository.UserInfoRepository;
@@ -25,6 +21,7 @@ import com.proyecto.backend.repository.UserInfoRepository;
 import java.util.Map;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth/api")
@@ -123,5 +120,23 @@ public class AuthApiController {
         jwtService.invalidateToken(actualToken);
         
         return ResponseEntity.ok("Sesión cerrada correctamente");
+    }
+
+    @GetMapping("/usuarios")
+    public ResponseEntity<?> getAllUsers() {
+        return ResponseEntity.ok(userInfoService.getAllUsers());
+    }
+
+    //Borrar usuario
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        userInfoService.deleteUser(id);
+        return ResponseEntity.ok("Usuario eliminado correctamente");
+    }
+
+    @PostMapping("/usuarios/actualizar/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserInfo userInfo) {
+        UserInfo updatedUser = userInfoService.updateUser(id, userInfo);
+        return ResponseEntity.ok(updatedUser);
     }
 }

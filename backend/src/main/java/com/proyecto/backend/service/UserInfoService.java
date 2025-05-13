@@ -80,4 +80,29 @@ public class UserInfoService implements UserDetailsService {
         return repository.findByUsername(username); // Devuelve un Optional<UserInfo>
     }
 
+    //Obtener usuarios
+    public Iterable<UserInfo> getAllUsers() {
+        return repository.findAll();
+    }
+
+    //Eliminar usuario
+    public void deleteUser(Long id) {
+        repository.deleteById(id);
+    }
+
+    //Actualizar usuario
+    public UserInfo updateUser(Long id, UserInfo userInfo) {
+        Optional<UserInfo> existingUser = repository.findById(id);
+        if (existingUser.isPresent()) {
+            UserInfo userToUpdate = existingUser.get();
+            userToUpdate.setNombre(userInfo.getNombre());
+            userToUpdate.setApellidos(userInfo.getApellidos());
+            userToUpdate.setUsername(userInfo.getUsername());
+            userToUpdate.setEmail(userInfo.getEmail());
+            userToUpdate.setRol(userInfo.getRol());
+            return repository.save(userToUpdate);
+        }
+        return null; // O lanzar una excepción si el usuario no existe
+    }
+
 }

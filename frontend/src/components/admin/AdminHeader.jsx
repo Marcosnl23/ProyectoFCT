@@ -8,7 +8,7 @@ function AdminHeader({ toggleSidebar }) {
   };
 
   return (
-    <Navbar bg="dark" variant="dark" className="mb-3">
+    <Navbar bg="dark" variant="dark">
       <Container fluid>
         <Button variant="outline-light" onClick={toggleSidebar}>
           <FontAwesomeIcon icon={faBars} />

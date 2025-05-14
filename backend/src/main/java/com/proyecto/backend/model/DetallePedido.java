@@ -24,14 +24,19 @@ public class DetallePedido {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
+    @ManyToOne
+    @JoinColumn(name = "talla_id", nullable = false) // Relación con la talla
+    private Talla talla;
+
     private Integer cantidad;
     private Double precio;
 
-    public DetallePedido(Pedido pedido, Producto producto, Integer cantidad, Double precio) {
+    public DetallePedido(Pedido pedido, Producto producto, Integer cantidad, Double precio,Talla talla) {
         this.pedido = pedido;
         this.producto = producto;
         this.cantidad = cantidad;
         this.precio = precio;
+        this.talla=talla;
     }
 
     public DetallePedido(Long id, Pedido pedido, Producto producto, Integer cantidad, Double precio) {
@@ -84,6 +89,14 @@ public class DetallePedido {
 
     public void setPrecio(Double precio) {
         this.precio = precio;
+    }
+
+    public Talla getTalla() {
+        return talla;
+    }
+
+    public void setTalla(Talla talla) {
+        this.talla = talla;
     }
 }
 

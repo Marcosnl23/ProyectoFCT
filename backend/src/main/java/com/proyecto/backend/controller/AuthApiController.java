@@ -94,7 +94,7 @@ public class AuthApiController {
         });
 
         UserDetails userDetails = new UserInfoDetails(user); // Aquí se crea un UserDetails a partir del usuario
-        // 4. Asegúrate que `UserInfo` implemente `UserDetails` (como ya vimos antes)
+
         String jwt = jwtService.generateToken(userDetails); // Aquí user ya es un UserDetails válido
 
         // 5. Retorna el token JWT generado

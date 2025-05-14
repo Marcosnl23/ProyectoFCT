@@ -132,3 +132,7 @@ SELECT * FROM favoritos;
 
 UPDATE usuarios SET rol = 'admin' WHERE id = '1';
 
+ALTER TABLE detalle_pedido
+ADD COLUMN talla_id BIGINT,
+ADD FOREIGN KEY (talla_id) REFERENCES tallas(id);
+

@@ -22,30 +22,35 @@ const useCarritoStore = create(
     (set, get) => ({
       carrito: [],
 
-      // Añadir un producto al carrito
-      addToCarrito: (producto) => {
+      // Añadir un producto al carrito con talla
+      addToCarrito: (producto, tallaId) => {
         const carritoActual = get().carrito;
         const productoExistente = carritoActual.find(
-          (item) => item.id === producto.id
+          (item) => item.id === producto.id && item.tallaId === tallaId
         );
 
         if (productoExistente) {
           const carritoActualizado = carritoActual.map((item) =>
-            item.id === producto.id
+            item.id === producto.id && item.tallaId === tallaId
               ? { ...item, cantidad: item.cantidad + 1 }
               : item
           );
           set({ carrito: carritoActualizado });
         } else {
-          set({ carrito: [...carritoActual, { ...producto, cantidad: 1 }] });
+          set({
+            carrito: [
+              ...carritoActual,
+              { ...producto, tallaId, cantidad: 1 },
+            ],
+          });
         }
       },
 
       // Eliminar un producto del carrito
-      removeFromCarrito: (productoId) => {
+      removeFromCarrito: (productoId, tallaId) => {
         const carritoActual = get().carrito;
         const carritoActualizado = carritoActual.filter(
-          (item) => item.id !== productoId
+          (item) => item.id !== productoId || item.tallaId !== tallaId
         );
         set({ carrito: carritoActualizado });
       },
@@ -62,7 +67,7 @@ const useCarritoStore = create(
           console.error("Token no encontrado. Por favor, inicie sesión.");
           return;
         }
-      
+
         let username;
         try {
           const decodedToken = jwtDecode(token);
@@ -71,57 +76,61 @@ const useCarritoStore = create(
           console.error("Error al decodificar el token:", error);
           return;
         }
-      
+
         const carrito = get().carrito;
         if (carrito.length === 0) {
           console.error("El carrito está vacío.");
           return;
         }
-      
+
         // Calcular el total del pedido
         const total = carrito.reduce(
           (acc, item) => acc + item.precio * item.cantidad,
           0
         );
-      
+
         const now = new Date();
         const fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
           .toISOString()
           .replace("Z", "");
-      
+
         try {
           // Crear el pedido con sus detalles
-          const pedidoResponse = await fetch("http://localhost:8080/api/pedidos", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              username,
-              total,
-              fecha,
-              detalles: carrito.map((producto) => ({
-                productoId: producto.id,
-                cantidad: producto.cantidad,
-                precio: producto.precio,
-              })),              
-            }),
-          });
-      
+          const pedidoResponse = await fetch(
+            "http://localhost:8080/api/pedidos",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                username,
+                total,
+                fecha,
+                detalles: carrito.map((producto) => ({
+                  productoId: producto.id,
+                  tallaId: producto.tallaId, 
+                  cantidad: producto.cantidad,
+                  precio: producto.precio,
+                })),
+              }),
+            }
+          );
+
           if (!pedidoResponse.ok) {
             throw new Error("Error al crear el pedido");
           }
-      
+
           const pedido = await pedidoResponse.json();
-      
+
           // Vaciar el carrito después de realizar el pedido
           set({ carrito: [] });
           console.log("Pedido creado con éxito:", pedido);
         } catch (error) {
           console.error("Error al crear el pedido:", error);
         }
-      }
+      },
     }),
     {
       name: storageKey,

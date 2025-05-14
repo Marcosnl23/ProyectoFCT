@@ -144,21 +144,18 @@ function CategoriaProductos() {
   const handleTallaSeleccionada = (productoId, talla) => {
     setTallasSeleccionadas((prevState) => ({
       ...prevState,
-      [productoId]: prevState[productoId] === talla ? null : talla, // Deseleccionar si ya está seleccionada
+      [productoId]: prevState[productoId] === talla.id ? null : talla.id, // Deseleccionar si ya está seleccionada
     }));
   };
 
   const handleAñadirAlCarrito = (producto) => {
-    const tallaSeleccionada = tallasSeleccionadas[producto.id];
-    if (tallasPorProducto[producto.id] && !tallaSeleccionada) {
+    const tallaSeleccionadaId = tallasSeleccionadas[producto.id];
+    if (tallasPorProducto[producto.id] && !tallaSeleccionadaId) {
       alert("Por favor, selecciona una talla antes de añadir al carrito.");
       return;
     }
 
-    addToCarrito({
-      ...producto,
-      talla: tallaSeleccionada || null, // Añadir la talla seleccionada o null si no aplica
-    });
+    addToCarrito(producto, tallaSeleccionadaId); // Pasar el producto y el tallaId
     alert("Producto añadido al carrito.");
   };
 
@@ -216,12 +213,12 @@ function CategoriaProductos() {
                             <button
                               key={talla.id}
                               className={`btn btn-sm me-2 mb-2 ${
-                                tallasSeleccionadas[producto.id] === talla.talla
+                                tallasSeleccionadas[producto.id] === talla.id
                                   ? "btn-primary"
                                   : "btn-outline-primary"
                               }`}
                               onClick={() =>
-                                handleTallaSeleccionada(producto.id, talla.talla)
+                                handleTallaSeleccionada(producto.id, talla)
                               }
                             >
                               {talla.talla}

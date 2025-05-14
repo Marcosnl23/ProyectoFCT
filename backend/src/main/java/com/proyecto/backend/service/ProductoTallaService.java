@@ -23,4 +23,16 @@ public class ProductoTallaService {
     public void eliminarProductoTalla(Long id) {
         productoTallaRepository.deleteById(id);
     }
+
+    public void reducirStock(Long productoId, Long tallaId, int cantidad) {
+        ProductoTalla productoTalla = productoTallaRepository.findByProductoIdAndTallaId(productoId, tallaId)
+                .orElseThrow(() -> new RuntimeException("Producto o talla no encontrados"));
+
+        if (productoTalla.getStock() < cantidad) {
+            throw new RuntimeException("Stock insuficiente para el producto y talla seleccionados");
+        }
+
+        productoTalla.setStock(productoTalla.getStock() - cantidad);
+        productoTallaRepository.save(productoTalla);
+    }
 }

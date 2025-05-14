@@ -40,6 +40,21 @@ function Sidebar() {
         >
           <FontAwesomeIcon icon={faShoppingCart} className="me-2" /> Pedidos
         </Nav.Link>
+        <Nav.Link 
+          as={Link} 
+          to="/admin/categorias"
+          className={`text-white ${location.pathname === '/admin/categorias' ? 'active' : ''}`} 
+        >
+          <FontAwesomeIcon icon={faBox} className="me-2" /> Categorías
+        </Nav.Link>
+        <Nav.Link
+          as={Link} 
+          to="/admin/tallas"
+          className={`text-white ${location.pathname === '/admin/tallas' ? 'active' : ''}`}
+        >
+          <FontAwesomeIcon icon={faBox} className="me-2" /> Tallas
+        </Nav.Link>
+        
       </Nav>
     </div>
   );

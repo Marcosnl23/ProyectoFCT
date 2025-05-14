@@ -13,7 +13,10 @@ import AdminLayout from "../src/components/admin/AdminLayout";
 import ProductosAdmin from "../src/components/pages/admin/ProductosAdmin";
 import UsuariosAdmin from "../src/components/pages/admin/UsuariosAdmin";
 import PedidosAdmin from "../src/components/pages/admin/PedidosAdmin";
+import CategoriasAdmin from "../src/components/pages/admin/CategoriasAdmin";
+import TallasAdmin from "../src/components/pages/admin/TallasAdmin";
 import AdminRoute from "./components/auth/AdminRoute";
+
 
 function App() {
   return (
@@ -42,6 +45,8 @@ function App() {
               <Route path="productos" element={<ProductosAdmin />} />
               <Route path="usuarios" element={<UsuariosAdmin />} />
               <Route path="pedidos" element={<PedidosAdmin />} />
+              <Route path="categorias" element={<CategoriasAdmin />} />
+              <Route path="tallas" element={<TallasAdmin />} />
             </Route>
           </Route>
         </Route>

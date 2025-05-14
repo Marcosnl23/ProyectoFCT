@@ -24,6 +24,7 @@ function Carrito() {
     useCarritoStore.setState({ carrito: carritoActualizado });
   };
 
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <NavBar />

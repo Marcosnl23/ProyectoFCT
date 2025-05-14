@@ -67,4 +67,9 @@ public class PedidoService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return pedidoRepository.findByUsuario(usuario);
     }
+
+    //Obtener todos los pedidos
+    public List<Pedido> obtenerTodosLosPedidos() {
+        return pedidoRepository.findAll();
+    }
 }

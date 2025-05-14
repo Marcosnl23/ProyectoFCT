@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de favoritos
 import useCarritoStore from "../components/store/useCarritoStore"; // Importar el store del carrito
+import { toast } from "react-toastify"; // Importar toast para notificaciones
 
 function CategoriaProductos() {
   const { categoriaId } = useParams(); // Obtener el ID de la categoría de la URL
@@ -39,7 +40,7 @@ function CategoriaProductos() {
 
       setTallasPorProducto((prevState) => ({
         ...prevState,
-        [productoId]: response.data,
+        [productoId]: response.data.filter((t) => t && t.id), // Aquí ya está bien definido
       }));
     } catch (err) {
       console.error(
@@ -151,12 +152,14 @@ function CategoriaProductos() {
   const handleAñadirAlCarrito = (producto) => {
     const tallaSeleccionadaId = tallasSeleccionadas[producto.id];
     if (tallasPorProducto[producto.id] && !tallaSeleccionadaId) {
-      alert("Por favor, selecciona una talla antes de añadir al carrito.");
+      toast.error(
+        "Por favor, selecciona una talla antes de añadir al carrito."
+      );
       return;
     }
 
-    addToCarrito(producto, tallaSeleccionadaId); // Pasar el producto y el tallaId
-    alert("Producto añadido al carrito.");
+    addToCarrito(producto, tallaSeleccionadaId);
+    toast.success("Producto añadido al carrito 🎉");
   };
 
   return (

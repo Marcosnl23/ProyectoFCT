@@ -16,43 +16,47 @@ import PedidosAdmin from "../src/components/pages/admin/PedidosAdmin";
 import CategoriasAdmin from "../src/components/pages/admin/CategoriasAdmin";
 import TallasAdmin from "../src/components/pages/admin/TallasAdmin";
 import AdminRoute from "./components/auth/AdminRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <>
+      <ToastContainer position="top-center" autoClose={2000} />
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/welcome" element={<Welcome />} />
-          <Route
-            path="/categoria/:categoriaId"
-            element={<CategoriaProductos />}
-          />
-          <Route path="/buscar" element={<BusquedaProductos />} />
-          <Route path="/favoritos" element={<Favoritos />} />
-          <Route path="/cart" element={<Carrito />} />
-          <Route path="/historial" element={<HistorialPedidos />} />
+      <Router>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-           {/* Admin routes - protected with AdminRoute */}
-           <Route element={<AdminRoute />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<ProductosAdmin />} />
-              <Route path="productos" element={<ProductosAdmin />} />
-              <Route path="usuarios" element={<UsuariosAdmin />} />
-              <Route path="pedidos" element={<PedidosAdmin />} />
-              <Route path="categorias" element={<CategoriasAdmin />} />
-              <Route path="tallas" element={<TallasAdmin />} />
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/categoria/:categoriaId" element={<CategoriaProductos />} />
+            <Route path="/buscar" element={<BusquedaProductos />} />
+            <Route path="/favoritos" element={<Favoritos />} />
+            <Route path="/cart" element={<Carrito />} />
+            <Route path="/historial" element={<HistorialPedidos />} />
+
+            {/* Admin routes */}
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<ProductosAdmin />} />
+                <Route path="productos" element={<ProductosAdmin />} />
+                <Route path="usuarios" element={<UsuariosAdmin />} />
+                <Route path="pedidos" element={<PedidosAdmin />} />
+                <Route path="categorias" element={<CategoriasAdmin />} />
+                <Route path="tallas" element={<TallasAdmin />} />
+              </Route>
             </Route>
           </Route>
-        </Route>
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </>
   );
 }
+
 
 export default App;

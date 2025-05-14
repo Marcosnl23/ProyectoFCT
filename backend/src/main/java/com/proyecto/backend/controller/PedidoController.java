@@ -1,10 +1,8 @@
 package com.proyecto.backend.controller;
 
-import com.proyecto.backend.model.DetallePedido;
-import com.proyecto.backend.model.Pedido;
-import com.proyecto.backend.model.Producto;
-import com.proyecto.backend.model.UserInfo;
+import com.proyecto.backend.model.*;
 import com.proyecto.backend.repository.ProductoRepository;
+import com.proyecto.backend.repository.TallaRepository;
 import com.proyecto.backend.repository.UserInfoRepository;
 import com.proyecto.backend.service.PedidoService;
 import com.proyecto.backend.service.JwtService;
@@ -29,6 +27,9 @@ public class PedidoController {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private TallaRepository tallaRepository;
 
     @Autowired
     private JwtService jwtService;
@@ -58,17 +59,25 @@ public class PedidoController {
             Producto producto = productoRepository.findById(productoId)
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
+            Number tallaIdNum = (Number) detalleData.get("tallaId");
+            Long tallaId = tallaIdNum.longValue();
+
+            Talla talla = tallaRepository.findById(tallaId)
+                    .orElseThrow(() -> new RuntimeException("Talla no encontrada"));
+
             Integer cantidad = ((Number) detalleData.get("cantidad")).intValue();
             Double precio = Double.valueOf(detalleData.get("precio").toString());
 
             DetallePedido detalle = new DetallePedido();
             detalle.setPedido(pedido);
             detalle.setProducto(producto);
+            detalle.setTalla(talla);
             detalle.setCantidad(cantidad);
             detalle.setPrecio(precio);
 
             detalles.add(detalle);
         }
+
 
         pedido.setDetalles(detalles);
 
@@ -84,6 +93,13 @@ public class PedidoController {
         String token = authorizationHeader.replace("Bearer ", "").trim();
         String username = jwtService.extractUsername(token);
         return pedidoService.obtenerPedidosDeUsuarioPorUsername(username);
+    }
+
+    //Obtner todos los pedidos
+    @GetMapping("/all")
+    public ResponseEntity<List<Pedido>> obtenerTodosLosPedidos() {
+        List<Pedido> pedidos = pedidoService.obtenerTodosLosPedidos();
+        return ResponseEntity.ok(pedidos);
     }
 
 }

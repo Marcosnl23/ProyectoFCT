@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Table, Container, Alert, Spinner, Row, Col, Card, ListGroup, Image } from "react-bootstrap";
+import {
+  Table,
+  Container,
+  Alert,
+  Spinner,
+  Row,
+  Col,
+  Card,
+  ListGroup,
+  Image,
+} from "react-bootstrap";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
 
@@ -18,13 +28,16 @@ const HistorialPedidos = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:8080/api/pedidos/usuario", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token.trim()}`,
-          },
-        });
+        const response = await fetch(
+          "http://localhost:8080/api/pedidos/usuario",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token.trim()}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Error al obtener el historial de pedidos.");
@@ -75,9 +88,12 @@ const HistorialPedidos = () => {
               <Col md={12} key={pedido.id} className="mb-4">
                 <Card className="shadow-sm">
                   <Card.Body>
-                    <Card.Title className="mb-3">Pedido #{index + 1}</Card.Title>
+                    <Card.Title className="mb-3">
+                      Pedido #{index + 1}
+                    </Card.Title>
                     <Card.Text>
-                      <strong>Fecha:</strong> {new Date(pedido.fecha).toLocaleDateString()}
+                      <strong>Fecha:</strong>{" "}
+                      {new Date(pedido.fecha).toLocaleDateString()}
                     </Card.Text>
                     <Card.Text>
                       <strong>Total:</strong> {pedido.total.toFixed(2)}€
@@ -87,18 +103,27 @@ const HistorialPedidos = () => {
                     </Card.Text>
                     <ListGroup variant="flush">
                       {pedido.detalles.map((detalle) => (
-                        <ListGroup.Item key={detalle.id} className="d-flex align-items-center">
+                        <ListGroup.Item
+                          key={detalle.id}
+                          className="d-flex align-items-center"
+                        >
                           <Image
                             src={detalle.producto.imagen}
                             alt={detalle.producto.nombre}
                             rounded
-                            style={{ width: "60px", height: "60px", objectFit: "cover" }}
+                            style={{
+                              width: "60px",
+                              height: "60px",
+                              objectFit: "cover",
+                            }}
                             className="me-3"
                           />
                           <div>
                             <strong>{detalle.producto.nombre}</strong>
                             <p className="mb-0 text-muted">
-                              Cantidad: {detalle.cantidad} | Precio: {detalle.precio.toFixed(2)}€
+                              Talla: {detalle.talla?.talla || "N/A"} |
+                              Cantidad: {detalle.cantidad} | Precio:{" "}
+                              {detalle.precio.toFixed(2)}€
                             </p>
                           </div>
                         </ListGroup.Item>

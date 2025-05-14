@@ -14,7 +14,7 @@ function PedidosAdmin() {
 
   const cargarPedidos = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/pedidos', {
+      const response = await fetch('http://localhost:8080/api/pedidos/all', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

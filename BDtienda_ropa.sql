@@ -78,6 +78,18 @@ CREATE TABLE favoritos (
     UNIQUE (usuario_id, producto_id) -- Evitar duplicados
 );
 
+-- Tabla de valoraciones generales de usuarios
+CREATE TABLE valoraciones_generales (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    puntuacion INT NOT NULL CHECK (puntuacion >= 1 AND puntuacion <= 5),
+    comentario TEXT,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    UNIQUE (usuario_id) -- Un usuario solo puede dejar una valoración general
+);
+
+
 -- Insertar categorías
 INSERT INTO categorias (nombre, genero, imagen) VALUES 
 ('Camisetas', 'Hombre','https://static.bershka.net/assets/public/65e2/0ba0/a8a14d5a93f2/4addeef4fa20/slide_man_tshirts_-1/slide_man_tshirts_-1.jpg?ts=1743063395380'),
@@ -120,6 +132,17 @@ INSERT INTO productos_tallas (producto_id, talla_id, stock) VALUES
 (11, 1, 9), (11, 2, 6),
 (12, 2, 25), (12, 3, 18);
 
+-- Ejemplo: Insertar usuarios (mínimo para que funcionen las valoraciones)
+INSERT INTO usuarios (nombre, apellidos, username, email, password, rol) VALUES
+('Juan', 'Pérez', 'juanp', 'juanp@mail.com', 'hashedpassword1', 'USER'),
+('María', 'González', 'mariag', 'mariag@mail.com', 'hashedpassword2', 'USER'),
+('Carlos', 'López', 'carlosl', 'carlosl@mail.com', 'hashedpassword3', 'USER');
+
+-- Insertar valoraciones generales de ejemplo
+INSERT INTO valoraciones_generales (usuario_id, puntuacion, comentario) VALUES
+(1, 5, 'Me encanta la calidad y el envío fue rapidísimo.'),
+(2, 4, 'Muy buena atención al cliente y productos cómodos.'),
+(3, 3, 'Calidad aceptable pero podrían mejorar la variedad de tallas.');
 -- Consultas de prueba
 SELECT * FROM usuarios;
 SELECT * FROM productos;

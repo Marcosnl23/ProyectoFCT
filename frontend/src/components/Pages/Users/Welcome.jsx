@@ -4,15 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from "jwt-decode";  // corregido: es default export, no destructurado
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import NavBar from "./NavBar";
-import Footer from "./Footer";
-import logo from "../assets/logo.png";
-import ImageCarousel from "./Carousel";
-import imagen1 from "../assets/image1.jpg";
-import imagen2 from "../assets/image2.jpg";
-import imagen3 from "../assets/image3.jpg";
+import NavBar from "../../common/NavBar";
+import Footer from "../../common/Footer";
+import logo from "../../../assets/logo.png";
+import ImageCarousel from "../../common/Carousel";
+import imagen1 from "../../../assets/image1.jpg";
+import imagen2 from "../../../assets/image2.jpg";
+import imagen3 from "../../../assets/image3.jpg";
 import { FaShippingFast, FaExchangeAlt, FaHeadset } from "react-icons/fa";
-import "../css/CategoriaStyles.css";
+import "../../../css/CategoriaStyles.css";
 
 function Welcome() {
   const [categorias, setCategorias] = useState([]);

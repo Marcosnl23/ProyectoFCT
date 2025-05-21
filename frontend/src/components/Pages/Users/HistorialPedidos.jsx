@@ -10,8 +10,8 @@ import {
   ListGroup,
   Image,
 } from "react-bootstrap";
-import NavBar from "./NavBar";
-import Footer from "./Footer";
+import NavBar from "../../common/NavBar";
+import Footer from "../../common/Footer";
 
 const HistorialPedidos = () => {
   const [pedidos, setPedidos] = useState([]);

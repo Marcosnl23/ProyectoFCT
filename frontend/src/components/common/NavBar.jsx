@@ -13,10 +13,10 @@ import { Heart, Bag, Search, Person } from "react-bootstrap-icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de favoritos
-import useCarritoStore from "../components/store/useCarritoStore"; // Importar el store del carrito
-import "../css/Navbar.css";
-import logo from "../assets/logo.png";
+import "../../css/NavBar.css";
+import logo from "../../assets/logo.png";
+import  useFavoritosStore  from "../store/useFavoritosStore"; // Importar el store de favoritos
+import  useCarritoStore  from "../store/useCarritoStore"; // Importar el store de carrito
 
 function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);

@@ -1,8 +1,9 @@
 import React from "react";
 import { Container, Row, Col, Button, Card, Badge, Alert } from "react-bootstrap";
-import useCarritoStore from "../components/store/useCarritoStore";
-import Footer from "./Footer";
-import NavBar from "./Navbar";
+import NavBar from "../../common/NavBar";
+import Footer from "../../common/Footer";
+import  useCarritoStore  from "../../store/useCarritoStore";
+
 
 function Carrito() {
   const { carrito, removeFromCarrito, clearCarrito, crearPedido } = useCarritoStore();

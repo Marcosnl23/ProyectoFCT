@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Carousel } from 'react-bootstrap';
-import imagen1 from '../assets/image1.jpg';
-import imagen2 from '../assets/image2.jpg';
-import imagen3 from '../assets/image3.jpg';
-import '../css/Carousel.css'; // Asegúrate de crear este archivo CSS
+import imagen1 from '../../assets/image1.jpg';
+import imagen2 from '../../assets/image2.jpg';
+import imagen3 from '../../assets/image3.jpg';
+import '../../css/Carousel.css'; // Asegúrate de crear este archivo CSS
 
 function CarouselComponent() {
   const [index, setIndex] = useState(0);

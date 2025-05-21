@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Row, Col, Card, Alert, Form } from "react-bootstrap";
-import Footer from "./Footer";
-import Navbar from "./Navbar";
-import useFavoritosStore from "../components/store/useFavoritosStore"; // Importar el store de favoritos
-import useCarritoStore from "../components/store/useCarritoStore"; // Importar el store del carrito
+import { Container, Row, Col, Card, Alert, Button } from "react-bootstrap";
+import Navbar from "../../common/NavBar"; // Importar el componente NavBar
+import Footer from "../../common/Footer"; // Importar el componente Footer
+import useFavoritosStore from "../../store/useFavoritosStore"; // Importar el store de favoritos
+import useCarritoStore from "../../store/useCarritoStore"; // Importar el store del carrito
+import { toast } from "react-toastify"; // Importar toast para notificaciones
 
-function BusquedaProductos() {
-  const location = useLocation();
-  const navigate = useNavigate();
+function CategoriaProductos() {
+  const { categoriaId } = useParams(); // Obtener el ID de la categoría de la URL
+  const { favoritos, toggleFavorito } = useFavoritosStore(); // Obtener los IDs de favoritos y la función para alternar favoritos
+  const { addToCarrito } = useCarritoStore(); // Obtener la función para añadir productos al carrito
   const [productos, setProductos] = useState([]);
-  const [filteredProductos, setFilteredProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [nombreCategoria, setNombreCategoria] = useState(""); // Para almacenar el nombre de la categoría
+  const navigate = useNavigate(); // Para redirigir al usuario si es necesario
   const [tallasPorProducto, setTallasPorProducto] = useState({});
   const [tallasSeleccionadas, setTallasSeleccionadas] = useState({}); // Estado para las tallas seleccionadas por producto
-
-  // Zustand: Obtener favoritos y función para alternar favoritos
-  const { favoritos, toggleFavorito } = useFavoritosStore();
-  const { addToCarrito } = useCarritoStore(); // Obtener la función para añadir productos al carrito
-
-  const params = new URLSearchParams(location.search);
-  const query = params.get("q");
 
   // Obtener las tallas del producto
   const obtenerTallas = async (productoId) => {
@@ -46,7 +40,7 @@ function BusquedaProductos() {
 
       setTallasPorProducto((prevState) => ({
         ...prevState,
-        [productoId]: response.data,
+        [productoId]: response.data.filter((t) => t && t.id), // Aquí ya está bien definido
       }));
     } catch (err) {
       console.error(
@@ -66,8 +60,9 @@ function BusquedaProductos() {
           return;
         }
 
+        // Hacer la solicitud con el token en el encabezado
         const response = await axios.get(
-          `http://localhost:8080/api/productos?nombre=${encodeURIComponent(query)}`,
+          `http://localhost:8080/api/productos/categoria/${categoriaId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -75,8 +70,24 @@ function BusquedaProductos() {
           }
         );
 
+        // Obtener el nombre de la categoría
+        try {
+          const categoriaResponse = await axios.get(
+            `http://localhost:8080/api/categorias/${categoriaId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          if (categoriaResponse.data && categoriaResponse.data.nombre) {
+            setNombreCategoria(categoriaResponse.data.nombre);
+          }
+        } catch (catErr) {
+          console.error("Error al obtener el nombre de la categoría:", catErr);
+        }
+
         setProductos(response.data);
-        setFilteredProductos(response.data);
 
         // Obtener las tallas para cada producto
         response.data.forEach((producto) => {
@@ -86,7 +97,9 @@ function BusquedaProductos() {
         setLoading(false);
       } catch (err) {
         if (err.response && err.response.status === 401) {
-          setError("Token inválido o expirado. Redirigiendo al inicio de sesión...");
+          setError(
+            "Token inválido o expirado. Redirigiendo al inicio de sesión..."
+          );
           localStorage.removeItem("token");
           setTimeout(() => navigate("/"), 3000);
         } else {
@@ -96,41 +109,8 @@ function BusquedaProductos() {
       }
     };
 
-    if (query) {
-      fetchProductos();
-    } else {
-      setError("No se proporcionó un término de búsqueda.");
-      setLoading(false);
-    }
-  }, [query, navigate]);
-
-  const handleFilter = () => {
-    const filtered = productos.filter((producto) => {
-      const precio = producto.precio || 0;
-      const min = parseFloat(minPrice) || 0;
-      const max = parseFloat(maxPrice) || Infinity;
-      return precio >= min && precio <= max;
-    });
-    setFilteredProductos(filtered);
-  };
-
-  const handleTallaSeleccionada = (productoId, talla) => {
-    setTallasSeleccionadas((prevState) => ({
-      ...prevState,
-      [productoId]: prevState[productoId] === talla.id ? null : talla.id, // Deseleccionar si ya está seleccionada
-    }));
-  };
-
-  const handleAñadirAlCarrito = (producto) => {
-    const tallaSeleccionadaId = tallasSeleccionadas[producto.id];
-    if (tallasPorProducto[producto.id] && !tallaSeleccionadaId) {
-      alert("Por favor, selecciona una talla antes de añadir al carrito.");
-      return;
-    }
-
-    addToCarrito(producto, tallaSeleccionadaId); // Pasar el producto y el tallaId
-    alert("Producto añadido al carrito.");
-  };
+    fetchProductos();
+  }, [categoriaId, navigate]);
 
   if (loading) {
     return (
@@ -162,54 +142,41 @@ function BusquedaProductos() {
     );
   }
 
+  const handleTallaSeleccionada = (productoId, talla) => {
+    setTallasSeleccionadas((prevState) => ({
+      ...prevState,
+      [productoId]: prevState[productoId] === talla.id ? null : talla.id, // Deseleccionar si ya está seleccionada
+    }));
+  };
+
+  const handleAñadirAlCarrito = (producto) => {
+    const tallaSeleccionadaId = tallasSeleccionadas[producto.id];
+    if (tallasPorProducto[producto.id] && !tallaSeleccionadaId) {
+      toast.error(
+        "Por favor, selecciona una talla antes de añadir al carrito."
+      );
+      return;
+    }
+
+    addToCarrito(producto, tallaSeleccionadaId);
+    toast.success("Producto añadido al carrito 🎉");
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar />
       <Container className="mt-5 pt-5 flex-grow-1">
-        <h2 className="mb-4">Resultados para "{query}"</h2>
+        <h2 className="mb-4">
+          {nombreCategoria || "Productos de la Categoría"}
+        </h2>
 
-        {/* Filtros de precio */}
-        <Form className="mb-4">
-          <Row>
-            <Col xs={12} md={4}>
-              <Form.Group controlId="minPrice">
-                <Form.Label>Precio mínimo</Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="Ej: 10"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={4}>
-              <Form.Group controlId="maxPrice">
-                <Form.Label>Precio máximo</Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="Ej: 100"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} md={4} className="d-flex align-items-end">
-              <button
-                type="button"
-                className="btn btn-primary w-100"
-                onClick={handleFilter}
-              >
-                Filtrar
-              </button>
-            </Col>
-          </Row>
-        </Form>
-
-        {filteredProductos.length === 0 ? (
-          <Alert variant="info">No se encontraron productos.</Alert>
+        {productos.length === 0 ? (
+          <Alert variant="info">
+            No hay productos disponibles en esta categoría.
+          </Alert>
         ) : (
           <Row xs={1} md={2} lg={3} className="g-4">
-            {filteredProductos.map((producto) => (
+            {productos.map((producto) => (
               <Col key={producto.id}>
                 <Card className="h-100 shadow-sm">
                   <div style={{ height: "300px", overflow: "hidden" }}>
@@ -217,7 +184,11 @@ function BusquedaProductos() {
                       variant="top"
                       src={producto.imagen || "default-image.jpg"}
                       alt={producto.nombre}
-                      style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                      style={{
+                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                      }}
                     />
                   </div>
                   <Card.Body>
@@ -225,7 +196,9 @@ function BusquedaProductos() {
                     <Card.Text>{producto.descripcion}</Card.Text>
                     {producto.precio && (
                       <div className="d-flex justify-content-between align-items-center mt-3">
-                        <span className="fw-bold">{producto.precio.toFixed(2)}€</span>
+                        <span className="fw-bold">
+                          {producto.precio.toFixed(2)}€
+                        </span>
                         <button
                           className="btn btn-sm btn-outline-primary"
                           onClick={() => handleAñadirAlCarrito(producto)}
@@ -257,19 +230,20 @@ function BusquedaProductos() {
                         </div>
                       </div>
                     )}
-                    {/* Botón de favoritos */}
-                    <button
-                      className={`btn btn-sm mt-3 ${
+                    {/* Botón para añadir/eliminar de favoritos */}
+                    <Button
+                      variant={
                         favoritos.includes(producto.id)
-                          ? "btn-danger"
-                          : "btn-outline-danger"
-                      }`}
+                          ? "danger"
+                          : "outline-danger"
+                      }
+                      className="mt-3"
                       onClick={() => toggleFavorito(producto.id)}
                     >
                       {favoritos.includes(producto.id)
                         ? "Eliminar de Favoritos"
                         : "Añadir a Favoritos"}
-                    </button>
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -284,4 +258,4 @@ function BusquedaProductos() {
   );
 }
 
-export default BusquedaProductos;
+export default CategoriaProductos;

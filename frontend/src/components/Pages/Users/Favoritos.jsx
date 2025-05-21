@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Alert, Button, Spinner } from "react-bootstrap";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
-import useFavoritosStore from "../components/store/useFavoritosStore";
+import Navbar from "../../common/NavBar";
+import Footer from "../../common/Footer";
+import  useFavoritosStore  from "../../store/useFavoritosStore"; 
 import axios from "axios";
 import {jwtDecode} from "jwt-decode"; 
 

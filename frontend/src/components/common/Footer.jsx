@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import "../css/Footer.css";
+import "../../css/Footer.css"; 
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

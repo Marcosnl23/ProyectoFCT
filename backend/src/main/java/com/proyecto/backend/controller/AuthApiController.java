@@ -1,11 +1,16 @@
 package com.proyecto.backend.controller;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.proyecto.backend.model.AuthRequest;
 import com.proyecto.backend.model.UserInfo;
 import com.proyecto.backend.service.JwtService;
 import com.proyecto.backend.service.UserInfoDetails;
 import com.proyecto.backend.service.UserInfoService;
+import com.proyecto.backend.service.GoogleAuthService;
+import com.proyecto.backend.repository.UserInfoRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,17 +19,12 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.proyecto.backend.service.GoogleAuthService;
-import com.proyecto.backend.repository.UserInfoRepository;
 
 import java.util.Map;
-
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth/api")
+@Tag(name = "Autenticación", description = "API para autenticación y gestión de usuarios")
 public class AuthApiController {
 
     @Autowired
@@ -42,11 +42,21 @@ public class AuthApiController {
     @Autowired
     private GoogleAuthService googleAuthService;
 
+    @Operation(summary = "Registrar un nuevo usuario")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario registrado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Error en los datos del usuario")
+    })
     @PostMapping("/register")
     public String addNewUser(@RequestBody UserInfo userInfo) {
         return userInfoService.addUser(userInfo);
     }
 
+    @Operation(summary = "Generar token JWT para un usuario")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token generado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Error en autenticación")
+    })
     @PostMapping("/generate-token")
     public ResponseEntity<?> generateToken(@RequestBody UserInfo userInfo) {
         try {
@@ -60,25 +70,26 @@ public class AuthApiController {
         return ResponseEntity.ok(token);
     }
 
-    // 🚀 NUEVO: Login con Google
+    @Operation(summary = "Login con token de Google")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login exitoso, token JWT generado"),
+            @ApiResponse(responseCode = "401", description = "Token de Google inválido")
+    })
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> request) {
         String idToken = request.get("token");
 
-        // 1. Verifica el token con Google
         GoogleIdToken.Payload payload = googleAuthService.verifyToken(idToken);
 
         if (payload == null) {
             return ResponseEntity.status(401).body("Token de Google inválido");
         }
 
-        // 2. Extrae los datos del payload de Google
         String email = payload.getEmail();
         String nombre = (String) payload.get("given_name");
         String apellidos = (String) payload.get("family_name");
         String username = email.split("@")[0];
 
-        // 3. Busca el usuario en la base de datos, o lo crea si no existe
         UserInfo user = userInfoRepository.findByEmail(email).orElseGet(() -> {
             UserInfo nuevo = new UserInfo();
             nuevo.setEmail(email);
@@ -86,18 +97,13 @@ public class AuthApiController {
             nuevo.setApellidos(apellidos);
             nuevo.setUsername(username);
             nuevo.setRol("user");
-            //Genera una contraseña aleatoria para el usuario encriptada
             String password = userInfoService.generateRandomPassword();
             nuevo.setPassword(userInfoService.encodePassword(password));
-
-            return userInfoRepository.save(nuevo); // Aquí se guarda el nuevo usuario
+            return userInfoRepository.save(nuevo);
         });
 
-        UserDetails userDetails = new UserInfoDetails(user); // Aquí se crea un UserDetails a partir del usuario
-
-        String jwt = jwtService.generateToken(userDetails); // Aquí user ya es un UserDetails válido
-
-        // 5. Retorna el token JWT generado
+        UserDetails userDetails = new UserInfoDetails(user);
+        String jwt = jwtService.generateToken(userDetails);
         return ResponseEntity.ok(Map.of("token", jwt));
     }
 
@@ -111,29 +117,40 @@ public class AuthApiController {
         }
     }
 
+    @Operation(summary = "Cerrar sesión e invalidar token JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sesión cerrada correctamente")
+    })
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
-        // Extraer el token del header)
         String actualToken = token.replace("Bearer ", "");
-        
-        // Invalidar el token en el servidor
         jwtService.invalidateToken(actualToken);
-        
         return ResponseEntity.ok("Sesión cerrada correctamente");
     }
 
+    @Operation(summary = "Obtener todos los usuarios")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuarios devuelta correctamente")
+    })
     @GetMapping("/usuarios")
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userInfoService.getAllUsers());
     }
 
-    //Borrar usuario
+    @Operation(summary = "Eliminar un usuario por ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario eliminado correctamente")
+    })
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userInfoService.deleteUser(id);
         return ResponseEntity.ok("Usuario eliminado correctamente");
     }
 
+    @Operation(summary = "Actualizar usuario por ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente")
+    })
     @PostMapping("/usuarios/actualizar/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserInfo userInfo) {
         UserInfo updatedUser = userInfoService.updateUser(id, userInfo);

@@ -1,12 +1,13 @@
-import React from "react";
-import { Container, Row, Col, Button, Card, Badge, Alert } from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Row, Col, Button, Card, Badge, Alert, Modal } from "react-bootstrap";
 import NavBar from "../../common/NavBar";
 import Footer from "../../common/Footer";
-import  useCarritoStore  from "../../store/useCarritoStore";
-
+import useCarritoStore from "../../store/useCarritoStore";
 
 function Carrito() {
   const { carrito, removeFromCarrito, clearCarrito, crearPedido } = useCarritoStore();
+
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const subtotal = carrito.reduce(
     (acc, item) => acc + item.precio * item.cantidad,
@@ -25,6 +26,12 @@ function Carrito() {
     useCarritoStore.setState({ carrito: carritoActualizado });
   };
 
+  const handleConfirmShow = () => setShowConfirm(true);
+  const handleConfirmClose = () => setShowConfirm(false);
+  const handleConfirmYes = () => {
+    crearPedido();
+    setShowConfirm(false);
+  };
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -170,7 +177,7 @@ function Carrito() {
                   </Row>
                 </Card.Body>
                 <Card.Footer className="bg-white p-3">
-                  <Button variant="primary" className="w-100 py-2" onClick={crearPedido}>
+                  <Button variant="primary" className="w-100 py-2" onClick={handleConfirmShow}>
                     <i className="bi bi-credit-card me-2"></i> Finalizar pedido
                   </Button>
                   <div className="text-center mt-3">
@@ -187,6 +194,24 @@ function Carrito() {
       <div className="mt-5">
         <Footer />
       </div>
+
+      {/* Modal de confirmación */}
+      <Modal show={showConfirm} onHide={handleConfirmClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar pedido</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          ¿Seguro que quiere hacer este pedido?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleConfirmClose}>
+            No
+          </Button>
+          <Button variant="primary" onClick={handleConfirmYes}>
+            Sí, confirmar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

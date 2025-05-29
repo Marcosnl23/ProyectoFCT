@@ -45,7 +45,9 @@ public class TallaService {
     public List<Talla> obtenerTallasPorProductoId(Long productoId) {
         List<ProductoTalla> productoTallas = productoTallaRepository.findByProductoId(productoId);
         return productoTallas.stream()
+                .filter(pt -> pt.getStock() > 0)  // solo tallas con stock
                 .map(ProductoTalla::getTalla)
                 .collect(Collectors.toList());
     }
+
 }

@@ -56,7 +56,7 @@ function PedidosAdmin() {
               <td>{pedido.id}</td>
               <td>{pedido.usuario?.username}</td>
               <td>{formatDate(pedido.fecha)}</td>
-              <td>${pedido.total.toFixed(2)}</td>
+              <td>{pedido.total.toFixed(2)}€</td>
               <td>
                 <Button
                   variant="info"
@@ -80,7 +80,7 @@ function PedidosAdmin() {
             <>
               <p><strong>Usuario:</strong> {pedidoSeleccionado.usuario?.username}</p>
               <p><strong>Fecha:</strong> {formatDate(pedidoSeleccionado.fecha)}</p>
-              <p><strong>Total:</strong> ${pedidoSeleccionado.total.toFixed(2)}</p>
+              <p><strong>Total:</strong> {pedidoSeleccionado.total.toFixed(2)}€</p>
               
               <h5 className="mt-4">Productos:</h5>
               <Table responsive striped>
@@ -97,8 +97,8 @@ function PedidosAdmin() {
                     <tr key={index}>
                       <td>{detalle.producto?.nombre}</td>
                       <td>{detalle.cantidad}</td>
-                      <td>${detalle.precio}</td>
-                      <td>${(detalle.cantidad * detalle.precio).toFixed(2)}</td>
+                      <td>{detalle.precio}€</td>
+                      <td>{(detalle.cantidad * detalle.precio).toFixed(2)}€</td>
                     </tr>
                   ))}
                 </tbody>

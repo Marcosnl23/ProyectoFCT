@@ -24,6 +24,14 @@ public class ValoracionGeneral {
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 
+    public ValoracionGeneral(UserInfo username, Integer puntuacion, String comentario) {
+        this.usuario = username;
+        this.puntuacion = puntuacion;
+        this.comentario = comentario;
+        this.fecha = LocalDateTime.now();
+
+    }
+
     @PrePersist
     protected void onCreate() {
         this.fecha = LocalDateTime.now();

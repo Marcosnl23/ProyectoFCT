@@ -218,7 +218,7 @@ function ProductosAdmin() {
                     />
                   </td>
                   <td>{producto.nombre}</td>
-                  <td>${producto.precio.toFixed(2)}</td>
+                  <td>{producto.precio.toFixed(2)}€</td>
                   <td>{producto.categoria?.nombre}</td>
                   <td>
                     {producto.tallas?.map((t) => (

@@ -40,7 +40,7 @@ function CategoriaProductos() {
 
       setTallasPorProducto((prevState) => ({
         ...prevState,
-        [productoId]: response.data.filter((t) => t && t.id), // Aquí ya está bien definido
+        [productoId]: response.data.filter((t) => t && t.id),
       }));
     } catch (err) {
       console.error(

@@ -1,35 +1,42 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { jwtDecode } from "jwt-decode";
+// Importaciones necesarias para crear el store
+import { create } from "zustand"; // Librería de gestión de estado
+import { persist } from "zustand/middleware"; // Middleware para persistencia
+import { jwtDecode } from "jwt-decode"; // Utilidad para decodificar JWT
 
-// Generar la clave dinámica para localStorage
+// Función para generar una clave única de almacenamiento basada en el usuario
 const generateStorageKey = () => {
   const token = localStorage.getItem("token");
-  if (!token) return "carrito-anonimo";
+  if (!token) return "carrito-anonimo"; // Clave para usuarios no autenticados
+  
   try {
     const decodedToken = jwtDecode(token);
     const username = decodedToken.sub || decodedToken.username;
-    return `carrito_${username}`;
+    return `carrito_${username}`; // Clave única por usuario
   } catch {
-    return "carrito-anonimo";
+    return "carrito-anonimo"; // Fallback si hay error al decodificar
   }
 };
 
+// Generar la clave de almacenamiento
 const storageKey = generateStorageKey();
 
+// Crear el store con persistencia
 const useCarritoStore = create(
   persist(
     (set, get) => ({
+      // Estado inicial del carrito
       carrito: [],
 
-      // Añadir un producto al carrito con talla
+      // Función para añadir productos al carrito
       addToCarrito: (producto, tallaId) => {
         const carritoActual = get().carrito;
+        // Buscar si el producto ya existe con la misma talla
         const productoExistente = carritoActual.find(
           (item) => item.id === producto.id && item.tallaId === tallaId
         );
 
         if (productoExistente) {
+          // Si existe, incrementar cantidad
           const carritoActualizado = carritoActual.map((item) =>
             item.id === producto.id && item.tallaId === tallaId
               ? { ...item, cantidad: item.cantidad + 1 }
@@ -37,6 +44,7 @@ const useCarritoStore = create(
           );
           set({ carrito: carritoActualizado });
         } else {
+          // Si no existe, añadir nuevo producto
           set({
             carrito: [
               ...carritoActual,
@@ -46,7 +54,7 @@ const useCarritoStore = create(
         }
       },
 
-      // Eliminar un producto del carrito
+      // Función para eliminar productos del carrito
       removeFromCarrito: (productoId, tallaId) => {
         const carritoActual = get().carrito;
         const carritoActualizado = carritoActual.filter(
@@ -55,47 +63,51 @@ const useCarritoStore = create(
         set({ carrito: carritoActualizado });
       },
 
-      // Vaciar el carrito
+      // Función para vaciar el carrito
       clearCarrito: () => {
         set({ carrito: [] });
       },
 
-      // Crear un pedido
+      // Función para crear un pedido
       crearPedido: async () => {
+        // Verificar autenticación
         const token = localStorage.getItem("token");
         if (!token) {
           console.error("Token no encontrado. Por favor, inicie sesión.");
           return;
         }
 
+        // Obtener username del token
         let username;
         try {
           const decodedToken = jwtDecode(token);
-          username = decodedToken.sub; // Usar el campo `sub` como el username
+          username = decodedToken.sub;
         } catch (error) {
           console.error("Error al decodificar el token:", error);
           return;
         }
 
+        // Verificar que hay productos en el carrito
         const carrito = get().carrito;
         if (carrito.length === 0) {
           console.error("El carrito está vacío.");
           return;
         }
 
-        // Calcular el total del pedido
+        // Calcular total del pedido
         const total = carrito.reduce(
           (acc, item) => acc + item.precio * item.cantidad,
           0
         );
 
+        // Generar fecha actual en formato ISO
         const now = new Date();
         const fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
           .toISOString()
           .replace("Z", "");
 
         try {
-          // Crear el pedido con sus detalles
+          // Enviar pedido al servidor
           const pedidoResponse = await fetch(
             "http://localhost:8080/api/pedidos",
             {
@@ -110,7 +122,7 @@ const useCarritoStore = create(
                 fecha,
                 detalles: carrito.map((producto) => ({
                   productoId: producto.id,
-                  tallaId: producto.tallaId, 
+                  tallaId: producto.tallaId,
                   cantidad: producto.cantidad,
                   precio: producto.precio,
                 })),
@@ -118,13 +130,14 @@ const useCarritoStore = create(
             }
           );
 
+          // Verificar respuesta
           if (!pedidoResponse.ok) {
             throw new Error("Error al crear el pedido");
           }
 
           const pedido = await pedidoResponse.json();
 
-          // Vaciar el carrito después de realizar el pedido
+          // Limpiar carrito tras pedido exitoso
           set({ carrito: [] });
           console.log("Pedido creado con éxito:", pedido);
         } catch (error) {
@@ -133,8 +146,9 @@ const useCarritoStore = create(
       },
     }),
     {
-      name: storageKey,
-      getStorage: () => localStorage,
+      // Configuración de persistencia
+      name: storageKey, // Clave única por usuario
+      getStorage: () => localStorage, // Usar localStorage
     }
   )
 );
